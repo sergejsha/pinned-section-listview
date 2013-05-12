@@ -126,16 +126,22 @@ public class PinnedSectionListView extends ListView {
 	
 	// delegating listener, can be null
 	private OnScrollListener mDelegateOnScrollListener;
-	// pinned view we recycle
-	private View mRecycleView;
-	// shadow wrapper instance for a pinned view
+	
+	// shadow for being recycled (can be null)
+	private PinnedViewShadow mRecycleShadow;
+	// shadow instance with a pinned view (can be null)
 	private PinnedViewShadow mPinnedShadow;
 	
 	/** Create shadow wrapper with a pinned view for a view at given position */
 	private void createPinnedShadow(int position) {
 		
+		// try to recycle shadow
+		PinnedViewShadow pinnedShadow = mRecycleShadow;
+		View recycleView = pinnedShadow == null ? null : pinnedShadow.view;
+		mRecycleShadow = null;
+		
 		// request new view
-		View pinnedView = getAdapter().getView(position, mRecycleView, PinnedSectionListView.this);
+		View pinnedView = getAdapter().getView(position, recycleView, PinnedSectionListView.this);
 		
 		// measure & layout
 		int ws = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY);
@@ -145,17 +151,18 @@ public class PinnedSectionListView extends ListView {
 		pinnedView.setTranslationY(0);
 
 		// create pinned shadow
-		PinnedViewShadow pinnedShadow = new PinnedViewShadow();
+		if (pinnedShadow == null) pinnedShadow = new PinnedViewShadow();
 		pinnedShadow.position = position;
 		pinnedShadow.view = pinnedView;
 		
-		// assign pinned shadow
+		// store pinned shadow
 		mPinnedShadow = pinnedShadow;
 	}
 	
 	/** Destroy shadow wrapper for currently pinned view */
 	private void destroyPinnedShadow() {
-		mRecycleView = mPinnedShadow.view;
+		// store shadow for being recycled later
+		mRecycleShadow = mPinnedShadow;
 		mPinnedShadow = null;
 	}
 	
