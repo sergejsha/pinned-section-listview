@@ -6,12 +6,12 @@ Watch [this video][1] to see `PinnedSectionListView` in action.
 
 Usage
 =====
- 1. Replace standard `ListView` with `com.hb.views.PinnedSectionListView` in your layout.xml file.
- 2. Extend your `ListAdapter` that it implements `PinnedSectionListAdapter` interface. Basically you need to 
-    implement an additional `isItemViewTypePinned(int viewType)` method there. It must return `true` for all
-    view types which have to be pinned.
+ 1. Replace standard `ListView` with `com.hb.views.PinnedSectionListView` in your `layout.xml` file.
+ 2. Extend your `ListAdapter` in a way that it implements `PinnedSectionListAdapter` interface, in addition to
+    what it already implements. Basically you need to add a single `isItemViewTypePinned(int viewType)` 
+    method. This method must return `true` for all view types which have to be pinned.
 
- That's all. You are done! Working example can also be found under `examples` folder. 
+ That's all. You are done! A working example can also be found in `examples` folder. 
 
 License
 =======
