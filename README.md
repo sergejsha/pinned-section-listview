@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 Introduction
 ============
 
@@ -34,5 +32,3 @@ License
 
 
 [1]: http://www.youtube.com/watch?v=eW7f7MDBtUY
-
->>>>>>> branch 'master' of git@github.com:beworker/pinned-section-listview.git
