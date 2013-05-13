@@ -75,17 +75,24 @@ public class PinnedSectionListView extends ListView {
 			// find position of a pinned view candidate
 			int candidatePosition = findNextVisibleCandidatePosition(firstVisibleItem, visibleItemCount);
 			if (candidatePosition == -1) {
-				if (isFastScrollEnabled()) {
-					// try to find invisible view
-					candidatePosition = findPreviousCandidatePosition(firstVisibleItem);
-					if (candidatePosition == -1) return; // nothing to pin
-					
-					// let's pin this invisible view at the very top
-					if (mPinnedShadow != null) destroyPinnedShadow();
-					createPinnedShadow(candidatePosition);
-					// and exit
+				if (!isFastScrollEnabled()) return; // exit here, we have no candidates to pin
+
+				// try to find invisible view
+				candidatePosition = findPreviousCandidatePosition(firstVisibleItem);
+				if (candidatePosition == -1) return; // exit here, nothing to pin
+				
+				// pin the candidate
+				if (mPinnedShadow != null) {
+					if (mPinnedShadow.position == candidatePosition) {
+						return; // exit, this candidate is already pinned
+					} else {
+						destroyPinnedShadow(); // destroy old pinned view
+					}
 				}
-				return; // exit here
+
+				// create new pinned view for candidate
+				createPinnedShadow(candidatePosition);
+				return; // exit, as we have created pinned candidate already
 			} 
 			
 			// we have a candidate
