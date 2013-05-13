@@ -118,22 +118,22 @@ public class PinnedSectionListView extends ListView {
 							// adjust translation
 							int translateY = candidateTop - mPinnedShadow.view.getHeight();
 							if (translateY > 0) translateY = 0;
-							mPinnedShadow.view.setTranslationY(translateY);
+							mTranslateY = translateY;
 						} // else, no candidates above
 					}
 					
 				} else { // new not yet pinned candidate
-					int translationY = candidateTop - mPinnedShadow.view.getHeight();
-					if (translationY < 0) { // we need to move pinned view up
-						if (translationY <= -mPinnedShadow.view.getHeight()) {
+					int translateY = candidateTop - mPinnedShadow.view.getHeight();
+					if (translateY < 0) { // we need to move pinned view up
+						if (translateY <= -mPinnedShadow.view.getHeight()) {
 							 // pinned shadow is out of visible area, replace pinned view
 							destroyPinnedShadow();
 							createPinnedShadow(candidatePosition);
 						} else {
-							mPinnedShadow.view.setTranslationY(translationY);
+							mTranslateY = translateY;
 						}
 					} else {
-						mPinnedShadow.view.setTranslationY(0);
+						mTranslateY = 0;
 					}
 				}
 			}
@@ -144,9 +144,11 @@ public class PinnedSectionListView extends ListView {
 	private OnScrollListener mDelegateOnScrollListener;
 	
 	// shadow for being recycled (can be null)
-	private PinnedViewShadow mRecycleShadow;
+	PinnedViewShadow mRecycleShadow;
 	// shadow instance with a pinned view (can be null)
-	private PinnedViewShadow mPinnedShadow;
+	PinnedViewShadow mPinnedShadow;
+	// pinned view translation, used to show how it sticks to the next section
+	int mTranslateY;
 	
 	/** Create shadow wrapper with a pinned view for a view at given position */
 	private void createPinnedShadow(int position) {
@@ -164,7 +166,7 @@ public class PinnedSectionListView extends ListView {
 		int hs = MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.AT_MOST);
 		pinnedView.measure(ws, hs);
 		pinnedView.layout(0, 0, pinnedView.getMeasuredWidth(), pinnedView.getMeasuredHeight());
-		pinnedView.setTranslationY(0);
+		mTranslateY = 0;
 
 		// create pinned shadow
 		if (pinnedShadow == null) pinnedShadow = new PinnedViewShadow();
@@ -232,8 +234,7 @@ public class PinnedSectionListView extends ListView {
 					createPinnedShadow(firstVisiblePosition);
 					// adjust translation
 					View childView = getChildAt(firstVisiblePosition);
-					int translateY = childView == null ? 0 : -childView.getTop();
-					mPinnedShadow.view.setTranslationY(translateY);
+					mTranslateY = childView == null ? 0 : -childView.getTop();
 				} else {
 					createPinnedShadow(position);
 				}
@@ -244,6 +245,14 @@ public class PinnedSectionListView extends ListView {
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
 		super.dispatchDraw(canvas);
-		if (mPinnedShadow != null) drawChild(canvas, mPinnedShadow.view, getDrawingTime());
+		if (mPinnedShadow != null) {
+			boolean shallTranslate = mTranslateY != 0;
+			if (shallTranslate) {
+				canvas.save();
+				canvas.translate(0f, mTranslateY);
+			} 
+			drawChild(canvas, mPinnedShadow.view, getDrawingTime());
+			if (shallTranslate) canvas.restore();
+		} 
 	}
 }
