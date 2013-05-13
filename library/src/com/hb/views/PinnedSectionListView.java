@@ -74,7 +74,19 @@ public class PinnedSectionListView extends ListView {
 			
 			// find position of a pinned view candidate
 			int candidatePosition = findNextVisibleCandidatePosition(firstVisibleItem, visibleItemCount);
-			if (candidatePosition == -1) return; // exit here, we have no visible candidates
+			if (candidatePosition == -1) {
+				if (isFastScrollEnabled()) {
+					// try to find invisible view
+					candidatePosition = findPreviousCandidatePosition(firstVisibleItem);
+					if (candidatePosition == -1) return; // nothing to pin
+					
+					// let's pin this invisible view at the very top
+					if (mPinnedShadow != null) destroyPinnedShadow();
+					createPinnedShadow(candidatePosition);
+					// and exit
+				}
+				return; // exit here
+			} 
 			
 			// we have a candidate
 			int childIndex = candidatePosition - firstVisibleItem;
