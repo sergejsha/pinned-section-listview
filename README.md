@@ -26,7 +26,7 @@ Usage
              // We implement this method to return 'true' for all view types we want to pin
              @Override
              public boolean isItemViewTypePinned(int viewType) {
-                 return viewType == Item.SECTION;
+                 return viewType == <type to be pinned>;
              }
         }
 
