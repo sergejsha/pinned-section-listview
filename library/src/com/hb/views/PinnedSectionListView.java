@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.SectionIndexer;
 
 /**
  * ListView capable to pin views at its top while the rest is still scrolled.
@@ -196,9 +197,17 @@ public class PinnedSectionListView extends ListView {
 	
 	private int findPreviousCandidatePosition(int fromPosition) {
 		PinnedSectionListAdapter adapter = (PinnedSectionListAdapter) getAdapter();
-		for (int position=fromPosition; position>=0; position--) {
-			int viewType = adapter.getItemViewType(position);
-			if (adapter.isItemViewTypePinned(viewType)) return position;
+		if (adapter instanceof SectionIndexer) {
+			// go quick way by asking section indexer
+			SectionIndexer indexer = (SectionIndexer) adapter;
+			int sectionPosition = indexer.getSectionForPosition(fromPosition);
+			return indexer.getPositionForSection(sectionPosition);
+		} else {
+			// go slow way by looking for the next section at top
+			for (int position=fromPosition; position>=0; position--) {
+				int viewType = adapter.getItemViewType(position);
+				if (adapter.isItemViewTypePinned(viewType)) return position;
+			}
 		}
 		return -1;
 	}
