@@ -73,11 +73,8 @@ public class PinnedSectionListView extends ListView {
 			if (adapter == null || visibleItemCount == 0) return; // nothing to do
 			
 			// find position of a pinned view candidate
-			int candidatePosition = findNextCandidatePosition(firstVisibleItem, visibleItemCount);
-			if (candidatePosition == -1) {
-				candidatePosition = findPreviousCandidatePosition(firstVisibleItem);
-				if (candidatePosition == -1) return; // exit here, we have no candidates
-			}
+			int candidatePosition = findNextVisibleCandidatePosition(firstVisibleItem, visibleItemCount);
+			if (candidatePosition == -1) return; // exit here, we have no visible candidates
 			
 			// we have a candidate
 			int childIndex = candidatePosition - firstVisibleItem;
@@ -166,7 +163,7 @@ public class PinnedSectionListView extends ListView {
 		mPinnedShadow = null;
 	}
 	
-	private int findNextCandidatePosition(int firstVisibleItem, int visibleItemCount) {
+	private int findNextVisibleCandidatePosition(int firstVisibleItem, int visibleItemCount) {
 		PinnedSectionListAdapter adapter = (PinnedSectionListAdapter) getAdapter();
 		for (int childIndex = 0; childIndex < visibleItemCount; childIndex++) {
 			int position = firstVisibleItem + childIndex;
