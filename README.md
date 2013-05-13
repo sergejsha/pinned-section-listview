@@ -30,7 +30,7 @@ Usage
              }
         }
 
- That's all. You are done! A working example can also be found in `examples` folder. 
+ That's all. You are done! A working example can also be found in `example` folder. 
 
 License
 =======
