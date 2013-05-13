@@ -16,11 +16,14 @@
 
 package com.hb.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.os.Build;
 import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.animation.TranslateAnimation;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -111,7 +114,7 @@ public class PinnedSectionListView extends ListView {
 							// adjust translation
 							int translateY = candidateTop - mPinnedShadow.view.getHeight();
 							if (translateY > 0) translateY = 0;
-							mPinnedShadow.view.setTranslationY(translateY);
+							setTranslationY(mPinnedShadow.view, translateY);
 						} // else, no candidates above
 					}
 					
@@ -123,10 +126,10 @@ public class PinnedSectionListView extends ListView {
 							destroyPinnedShadow();
 							createPinnedShadow(candidatePosition);
 						} else {
-							mPinnedShadow.view.setTranslationY(translationY);
+							setTranslationY(mPinnedShadow.view, translationY);
 						}
 					} else {
-						mPinnedShadow.view.setTranslationY(0);
+						setTranslationY(mPinnedShadow.view, 0);
 					}
 				}
 			}
@@ -157,7 +160,7 @@ public class PinnedSectionListView extends ListView {
 		int hs = MeasureSpec.makeMeasureSpec(getHeight(), MeasureSpec.AT_MOST);
 		pinnedView.measure(ws, hs);
 		pinnedView.layout(0, 0, pinnedView.getMeasuredWidth(), pinnedView.getMeasuredHeight());
-		pinnedView.setTranslationY(0);
+		setTranslationY(pinnedView, 0);
 
 		// create pinned shadow
 		if (pinnedShadow == null) pinnedShadow = new PinnedViewShadow();
@@ -226,7 +229,7 @@ public class PinnedSectionListView extends ListView {
 					// adjust translation
 					View childView = getChildAt(firstVisiblePosition);
 					int translateY = childView == null ? 0 : -childView.getTop();
-					mPinnedShadow.view.setTranslationY(translateY);
+					setTranslationY(mPinnedShadow.view, translateY);
 				} else {
 					createPinnedShadow(position);
 				}
@@ -238,5 +241,24 @@ public class PinnedSectionListView extends ListView {
 	protected void dispatchDraw(Canvas canvas) {
 		super.dispatchDraw(canvas);
 		if (mPinnedShadow != null) drawChild(canvas, mPinnedShadow.view, getDrawingTime());
+	}
+	
+	/**
+	 * Sets translation on new and older APIs.
+	 * @param view view to set translationY
+	 * @param translationY float of translationY
+	 */
+	@SuppressLint("NewApi")
+	private void setTranslationY(View view, float translationY) {
+		
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+			view.setTranslationY(translationY);
+		} else {
+			TranslateAnimation anim = new TranslateAnimation(0.0f, 0.0f, translationY, translationY);
+	        anim.setFillAfter(true);
+	        anim.setDuration(0);
+	        view.startAnimation(anim);
+		}
+		
 	}
 }
