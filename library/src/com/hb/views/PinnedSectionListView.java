@@ -16,6 +16,8 @@
 
 package com.hb.views;
 
+import com.hb.views.pinnedsection.BuildConfig;
+
 import android.content.Context;
 import android.graphics.Canvas;
 import android.os.Parcelable;
@@ -197,19 +199,24 @@ public class PinnedSectionListView extends ListView {
 	
 	private int findPreviousCandidatePosition(int fromPosition) {
 		PinnedSectionListAdapter adapter = (PinnedSectionListAdapter) getAdapter();
+		
 		if (adapter instanceof SectionIndexer) {
-			// go quick way by asking section indexer
+			// try fast way by asking section indexer
 			SectionIndexer indexer = (SectionIndexer) adapter;
 			int sectionPosition = indexer.getSectionForPosition(fromPosition);
-			return indexer.getPositionForSection(sectionPosition);
-		} else {
-			// go slow way by looking for the next section at top
-			for (int position=fromPosition; position>=0; position--) {
-				int viewType = adapter.getItemViewType(position);
-				if (adapter.isItemViewTypePinned(viewType)) return position;
-			}
+			int itemPosition = indexer.getPositionForSection(sectionPosition);
+			int typeView = adapter.getItemViewType(itemPosition);
+			if (adapter.isItemViewTypePinned(typeView)) {
+				return itemPosition;
+			} // else, no luck
 		}
-		return -1;
+		
+		// try slow way by looking through to the next section item above
+		for (int position=fromPosition; position>=0; position--) {
+			int viewType = adapter.getItemViewType(position);
+			if (adapter.isItemViewTypePinned(viewType)) return position;
+		}
+		return -1; // nothing found, no candidate
 	}
 	
 	private void initView() {
@@ -249,6 +256,17 @@ public class PinnedSectionListView extends ListView {
 				}
 			}
 		});
+	}
+	
+	@Override
+	public void setAdapter(ListAdapter adapter) {
+		if (BuildConfig.DEBUG) { // assert adapter in debug mode
+			if (!(adapter instanceof PinnedSectionListAdapter)) 
+				throw new IllegalArgumentException("Does your adapter implements PinnedSectionListAdapter?");
+			if (adapter.getViewTypeCount() < 2)
+				throw new IllegalArgumentException("Does your adapter handles at least two types of views - items and sections?");
+		}
+		super.setAdapter(adapter);
 	}
 	
 	@Override
