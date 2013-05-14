@@ -30,17 +30,16 @@ import android.widget.SectionIndexer;
 
 /**
  * ListView capable to pin views at its top while the rest is still scrolled.
- * @author sergej
  */
 public class PinnedSectionListView extends ListView {
 
 	/** List adapter to be implemented for being used with PinnedSectionListView adapter. */
 	public static interface PinnedSectionListAdapter extends ListAdapter {
-		/** This method shall return true if views of given type shall be pinned. */
+		/** This method shall return 'true' if views of given type has to be pinned. */
 		boolean isItemViewTypePinned(int viewType);
 	} 
 	
-	/** Wrapper class for pinned view */
+	/** Wrapper class for pinned section view and its position in the list */
 	static class PinnedViewShadow {
 		public View view;
 		public int position;
@@ -56,7 +55,7 @@ public class PinnedSectionListView extends ListView {
 		initView();
 	}
 
-	// scroll listener doing the magic
+	// scroll listener does the magic
 	private OnScrollListener mOnScrollListener = new OnScrollListener() {
 		
 		@Override public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -95,7 +94,7 @@ public class PinnedSectionListView extends ListView {
 
 				// create new pinned view for candidate
 				createPinnedShadow(candidatePosition);
-				return; // exit, as we have created pinned candidate already
+				return; // exit, as we have created a pinned candidate already
 			} 
 			
 			// we have a candidate
@@ -150,7 +149,7 @@ public class PinnedSectionListView extends ListView {
 	PinnedViewShadow mRecycleShadow;
 	// shadow instance with a pinned view (can be null)
 	PinnedViewShadow mPinnedShadow;
-	// pinned view translation, used to show how it sticks to the next section
+	// pinned view Y-translation; we use to stick pinned view to the next section
 	int mTranslateY;
 	
 	/** Create shadow wrapper with a pinned view for a view at given position */
@@ -216,7 +215,7 @@ public class PinnedSectionListView extends ListView {
 			int viewType = adapter.getItemViewType(position);
 			if (adapter.isItemViewTypePinned(viewType)) return position;
 		}
-		return -1; // nothing found, no candidate
+		return -1; // no candidate found
 	}
 	
 	private void initView() {
@@ -262,9 +261,9 @@ public class PinnedSectionListView extends ListView {
 	public void setAdapter(ListAdapter adapter) {
 		if (BuildConfig.DEBUG) { // assert adapter in debug mode
 			if (!(adapter instanceof PinnedSectionListAdapter)) 
-				throw new IllegalArgumentException("Does your adapter implements PinnedSectionListAdapter?");
+				throw new IllegalArgumentException("Does your adapter implement PinnedSectionListAdapter?");
 			if (adapter.getViewTypeCount() < 2)
-				throw new IllegalArgumentException("Does your adapter handles at least two types of views - items and sections?");
+				throw new IllegalArgumentException("Does your adapter handle at least two types of views - items and sections?");
 		}
 		super.setAdapter(adapter);
 	}
