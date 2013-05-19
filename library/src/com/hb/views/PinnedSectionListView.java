@@ -159,9 +159,18 @@ public class PinnedSectionListView extends ListView {
 		// request new view
 		View pinnedView = getAdapter().getView(position, recycleView, PinnedSectionListView.this);
 		
+		// read layout parameters
+		LayoutParams layoutParams = (LayoutParams) pinnedView.getLayoutParams();
+		int heightMode = MeasureSpec.getMode(layoutParams.height);
+		if (heightMode == MeasureSpec.UNSPECIFIED) heightMode = MeasureSpec.EXACTLY;
+		
+		int heightSize = MeasureSpec.getSize(layoutParams.height);
+		int maxHeight = getHeight() - getListPaddingTop() - getListPaddingBottom();
+		if (heightSize > maxHeight) heightSize = maxHeight;
+		
 		// measure & layout
 		int ws = MeasureSpec.makeMeasureSpec(getWidth() - getListPaddingLeft() - getListPaddingRight(), MeasureSpec.EXACTLY);
-		int hs = MeasureSpec.makeMeasureSpec(getHeight() - getListPaddingTop() - getListPaddingBottom(), MeasureSpec.AT_MOST);
+		int hs = MeasureSpec.makeMeasureSpec(heightSize, heightMode);
 		pinnedView.measure(ws, hs);
 		pinnedView.layout(0, 0, pinnedView.getMeasuredWidth(), pinnedView.getMeasuredHeight());
 		mTranslateY = 0;
