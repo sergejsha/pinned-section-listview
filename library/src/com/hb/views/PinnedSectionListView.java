@@ -251,6 +251,8 @@ public class PinnedSectionListView extends ListView {
 		// restore pinned view after configuration change
 		post(new Runnable() { 
 			@Override public void run() {
+				ListAdapter adapter = getAdapter();
+				if (adapter == null) return; // nothing to restore as adapter is still null
 				
 				// detect pinned position
 				int firstVisiblePosition = getFirstVisiblePosition();
