@@ -274,12 +274,13 @@ public class PinnedSectionListView extends ListView {
 	
 	@Override
 	public void setAdapter(ListAdapter adapter) {
-		if (BuildConfig.DEBUG) { // assert adapter in debug mode
+		if (BuildConfig.DEBUG && adapter != null) { // assert adapter in debug mode
 			if (!(adapter instanceof PinnedSectionListAdapter))
 				throw new IllegalArgumentException("Does your adapter implement PinnedSectionListAdapter?");
 			if (adapter.getViewTypeCount() < 2)
 				throw new IllegalArgumentException("Does your adapter handle at least two types of views - items and sections?");
 		}
+		destroyPinnedShadow();
 		super.setAdapter(adapter);
 	}
 	
