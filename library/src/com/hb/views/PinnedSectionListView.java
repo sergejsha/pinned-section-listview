@@ -34,17 +34,21 @@ import com.hb.views.pinnedsection.BuildConfig;
  */
 public class PinnedSectionListView extends ListView {
 
+    //-- inner classes
+
 	/** List adapter to be implemented for being used with PinnedSectionListView adapter. */
 	public static interface PinnedSectionListAdapter extends ListAdapter {
 		/** This method shall return 'true' if views of given type has to be pinned. */
 		boolean isItemViewTypePinned(int viewType);
 	}
 
-	/** Wrapper class for pinned section view and its position in the list */
+	/** Wrapper class for pinned section view and its position in the list. */
 	static class PinnedViewShadow {
 		public View view;
 		public int position;
 	}
+
+	//-- class fields
 
 	/** Default change observer. */
 	private final DataSetObserver mDataSetObserver = new DataSetObserver() {
@@ -56,17 +60,19 @@ public class PinnedSectionListView extends ListView {
 	    }
     };
 
-	public PinnedSectionListView(Context context, AttributeSet attrs) {
-		super(context, attrs);
-		initView();
-	}
+    /** Delegating listener, can be null. */
+    private OnScrollListener mDelegateOnScrollListener;
 
-	public PinnedSectionListView(Context context, AttributeSet attrs, int defStyle) {
-		super(context, attrs, defStyle);
-		initView();
-	}
+    /** Shadow for being recycled, can be null. */
+    PinnedViewShadow mRecycleShadow;
 
-	// scroll listener does the magic
+    /** shadow instance with a pinned view, can be null. */
+    PinnedViewShadow mPinnedShadow;
+
+    /** Pinned view Y-translation. We use it to stick pinned view to the next section. */
+    int mTranslateY;
+
+	/** Scroll listener which does the magic */
 	private final OnScrollListener mOnScrollListener = new OnScrollListener() {
 
 		@Override public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -149,15 +155,17 @@ public class PinnedSectionListView extends ListView {
 		}
 	};
 
-	// delegating listener, can be null
-	private OnScrollListener mDelegateOnScrollListener;
+	//-- class methods
 
-	// shadow for being recycled (can be null)
-	PinnedViewShadow mRecycleShadow;
-	// shadow instance with a pinned view (can be null)
-	PinnedViewShadow mPinnedShadow;
-	// pinned view Y-translation; we use to stick pinned view to the next section
-	int mTranslateY;
+    public PinnedSectionListView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        initView();
+    }
+
+    public PinnedSectionListView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        initView();
+    }
 
 	/** Create shadow wrapper with a pinned view for a view at given position */
 	private void createPinnedShadow(int position) {
@@ -297,7 +305,7 @@ public class PinnedSectionListView extends ListView {
 		// unregister observer at old adapter and register on new one
 		ListAdapter currentAdapter = getAdapter();
 		if (currentAdapter != null) currentAdapter.unregisterDataSetObserver(mDataSetObserver);
-		adapter.registerDataSetObserver(mDataSetObserver);
+		if (adapter != null) adapter.registerDataSetObserver(mDataSetObserver);
 
 		// destroy pinned shadow, if new adapter is not same as old one
 		if (currentAdapter != adapter) destroyPinnedShadow();
