@@ -31,6 +31,7 @@ import com.hb.views.pinnedsection.BuildConfig;
 
 /**
  * ListView capable to pin views at its top while the rest is still scrolled.
+ * @author sergej shafarenka
  */
 public class PinnedSectionListView extends ListView {
 
@@ -61,7 +62,7 @@ public class PinnedSectionListView extends ListView {
     };
 
     /** Delegating listener, can be null. */
-    private OnScrollListener mDelegateOnScrollListener;
+    OnScrollListener mDelegateOnScrollListener;
 
     /** Shadow for being recycled, can be null. */
     PinnedViewShadow mRecycleShadow;
@@ -167,22 +168,27 @@ public class PinnedSectionListView extends ListView {
         initView();
     }
 
+    private void initView() {
+        setOnScrollListener(mOnScrollListener);
+    }
+
 	/** Create shadow wrapper with a pinned view for a view at given position */
 	private void createPinnedShadow(int position) {
 
 		// try to recycle shadow
 		PinnedViewShadow pinnedShadow = mRecycleShadow;
-		View recycleView = pinnedShadow == null ? null : pinnedShadow.view;
 		mRecycleShadow = null;
 
-		// request new view
-		View pinnedView = getAdapter().getView(position, recycleView, PinnedSectionListView.this);
+		// create new shadow, if needed
+		if (pinnedShadow == null) pinnedShadow = new PinnedViewShadow();
+		// request new view using recycled view, if such
+		View pinnedView = getAdapter().getView(position, pinnedShadow.view, PinnedSectionListView.this);
 
 		// read layout parameters
 		LayoutParams layoutParams = (LayoutParams) pinnedView.getLayoutParams();
 
 		int heightMode, heightSize;
-		if (layoutParams == null) {
+		if (layoutParams == null) { // take care for missing layout parameters
 			heightMode = MeasureSpec.AT_MOST;
 			heightSize = getHeight();
 		} else {
@@ -202,8 +208,7 @@ public class PinnedSectionListView extends ListView {
 		pinnedView.layout(0, 0, pinnedView.getMeasuredWidth(), pinnedView.getMeasuredHeight());
 		mTranslateY = 0;
 
-		// create pinned shadow
-		if (pinnedShadow == null) pinnedShadow = new PinnedViewShadow();
+		// initialize pinned shadow
 		pinnedShadow.position = position;
 		pinnedShadow.view = pinnedView;
 
@@ -213,7 +218,7 @@ public class PinnedSectionListView extends ListView {
 
 	/** Destroy shadow wrapper for currently pinned view */
 	private void destroyPinnedShadow() {
-		// store shadow for being recycled later
+		// keep shadow for being recycled later
 		mRecycleShadow = mPinnedShadow;
 		mPinnedShadow = null;
 	}
@@ -248,10 +253,6 @@ public class PinnedSectionListView extends ListView {
 			if (adapter.isItemViewTypePinned(viewType)) return position;
 		}
 		return -1; // no candidate found
-	}
-
-	private void initView() {
-		setOnScrollListener(mOnScrollListener);
 	}
 
 	@Override
