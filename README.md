@@ -32,7 +32,11 @@ Usage
              }
         }
 
- That's all. You are done! A working example can also be found in `example` folder. 
+That's all. You are done! A working example can also be found in `example` folder. 
+
+Used by
+=======
+Be first to let us know if you use this library in your application and we will mention it here.
 
 License
 =======
