@@ -31,7 +31,6 @@ import com.hb.views.pinnedsection.BuildConfig;
 
 /**
  * ListView capable to pin views at its top while the rest is still scrolled.
- * @author sergej shafarenka
  */
 public class PinnedSectionListView extends ListView {
 
