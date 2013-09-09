@@ -37,7 +37,7 @@ public class PinnedSectionListView extends ListView {
     //-- inner classes
 
 	/** List adapter to be implemented for being used with PinnedSectionListView adapter. */
-	public static interface PinnedSectionListAdapter extends ListAdapter {
+	public static interface PinnedSectionListAdapter {
 		/** This method shall return 'true' if views of given type has to be pinned. */
 		boolean isItemViewTypePinned(int viewType);
 	}
@@ -226,7 +226,7 @@ public class PinnedSectionListView extends ListView {
 		PinnedSectionListAdapter adapter = (PinnedSectionListAdapter) getAdapter();
 		for (int childIndex = 0; childIndex < visibleItemCount; childIndex++) {
 			int position = firstVisibleItem + childIndex;
-			int viewType = adapter.getItemViewType(position);
+			int viewType = getAdapter().getItemViewType(position);
 			if (adapter.isItemViewTypePinned(viewType)) return position;
 		}
 		return -1;
@@ -240,7 +240,7 @@ public class PinnedSectionListView extends ListView {
 			SectionIndexer indexer = (SectionIndexer) adapter;
 			int sectionPosition = indexer.getSectionForPosition(fromPosition);
 			int itemPosition = indexer.getPositionForSection(sectionPosition);
-			int typeView = adapter.getItemViewType(itemPosition);
+			int typeView = getAdapter().getItemViewType(itemPosition);
 			if (adapter.isItemViewTypePinned(typeView)) {
 				return itemPosition;
 			} // else, no luck
@@ -248,7 +248,7 @@ public class PinnedSectionListView extends ListView {
 
 		// try slow way by looking through to the next section item above
 		for (int position=fromPosition; position>=0; position--) {
-			int viewType = adapter.getItemViewType(position);
+			int viewType = getAdapter().getItemViewType(position);
 			if (adapter.isItemViewTypePinned(viewType)) return position;
 		}
 		return -1; // no candidate found
