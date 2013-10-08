@@ -271,22 +271,22 @@ public class PinnedSectionListView extends ListView {
 		post(new Runnable() {
 			@Override public void run() {
 				ListAdapter adapter = getAdapter();
-				if (adapter == null) return; // nothing to restore as adapter is still null
+                if (adapter != null && adapter.getCount() > 0) {
+                    // detect pinned position
+                    int firstVisiblePosition = getFirstVisiblePosition();
+                    int position = findCurrentSectionPosition(firstVisiblePosition);
+                    if (position == -1) return; // no views to pin, exit
 
-				// detect pinned position
-				int firstVisiblePosition = getFirstVisiblePosition();
-				int position = findCurrentSectionPosition(firstVisiblePosition);
-				if (position == -1) return; // no views to pin, exit
-
-				if (firstVisiblePosition == position) {
-					// create pinned shadow for position
-					createPinnedShadow(firstVisiblePosition);
-					// adjust translation
-					View childView = getChildAt(firstVisiblePosition);
-					mTranslateY = childView == null ? 0 : -childView.getTop();
-				} else {
-					createPinnedShadow(position);
-				}
+                    if (firstVisiblePosition == position) {
+                        // create pinned shadow for position
+                        createPinnedShadow(firstVisiblePosition);
+                        // adjust translation
+                        View childView = getChildAt(firstVisiblePosition);
+                        mTranslateY = childView == null ? 0 : -childView.getTop();
+                    } else {
+                        createPinnedShadow(position);
+                    }
+                }
 			}
 		});
 	}
