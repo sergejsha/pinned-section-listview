@@ -185,19 +185,12 @@ public class PinnedSectionListView extends ListView {
 
 		// read layout parameters
 		LayoutParams layoutParams = (LayoutParams) pinnedView.getLayoutParams();
-
-		int heightMode, heightSize;
-		if (layoutParams == null) { // take care for missing layout parameters
-			layoutParams = new ListView.LayoutParams(
-				ListView.LayoutParams.MATCH_PARENT,
-				ListView.LayoutParams.WRAP_CONTENT);
-			pinnedView.setLayoutParams(layoutParams);
-			heightMode = MeasureSpec.AT_MOST;
-			heightSize = getHeight();
-		} else {
-			heightMode = MeasureSpec.getMode(layoutParams.height);
-			heightSize = MeasureSpec.getSize(layoutParams.height);
+		if (layoutParams == null) { // create default layout params
+		    layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
 		}
+
+		int heightMode = MeasureSpec.getMode(layoutParams.height);
+		int heightSize = MeasureSpec.getSize(layoutParams.height);
 
 		if (heightMode == MeasureSpec.UNSPECIFIED) heightMode = MeasureSpec.EXACTLY;
 
