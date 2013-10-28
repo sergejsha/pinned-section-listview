@@ -37,8 +37,8 @@ public class PinnedSectionListActivity extends ListActivity {
 	private static class MyPinnedSectionListAdapter extends ArrayAdapter<Item> implements PinnedSectionListAdapter {
 		
 		private static final int[] COLORS = new int[] {
-			android.R.color.holo_green_light, android.R.color.holo_orange_light,
-			android.R.color.holo_blue_light, android.R.color.holo_red_light };
+			R.color.green_light, R.color.orange_light,
+			R.color.blue_light, R.color.red_light };
 		
 		public MyPinnedSectionListAdapter(Context context, int resource, int textViewResourceId, List<Item> objects) {
 			super(context, resource, textViewResourceId, objects);
