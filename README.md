@@ -1,10 +1,13 @@
 Introduction
 ============
 
-Easy to use ListView with pinned sections for Android. Pinned section is a view which sticks to the top
-of the list until another view of same type dispaces it.
+Easy to use ListView with pinned sections for Android. Pinned section is a header view which sticks to the top
+of the list until at least one item of that section is visible.
 
-![Alt text](screen1.png) ![Alt text](screen2.png)
+&nbsp;&nbsp;&nbsp;&nbsp;
+![Alt text](screen1.png)&nbsp;&nbsp;&nbsp;
+![Alt text](screen2.png)&nbsp;&nbsp;&nbsp;
+![Alt text](screen3.png)
 
 Watch [this video][1] to see `PinnedSectionListView` in action.
 
