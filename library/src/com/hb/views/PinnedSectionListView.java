@@ -16,12 +16,17 @@
 
 package com.hb.views;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.SoundEffectConstants;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.AbsListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
@@ -46,6 +51,7 @@ public class PinnedSectionListView extends ListView {
 	static class PinnedViewShadow {
 		public View view;
 		public int position;
+		public long id;
 	}
 
 	//-- class fields
@@ -59,6 +65,10 @@ public class PinnedSectionListView extends ListView {
 	        destroyPinnedShadow();
 	    }
     };
+
+    // fields used in onTouchEvent handler
+    private final Rect mTouchRect = new Rect();
+    private View mTouchTarget;
 
     /** Delegating listener, can be null. */
     OnScrollListener mDelegateOnScrollListener;
@@ -81,7 +91,9 @@ public class PinnedSectionListView extends ListView {
 			}
 		}
 
-		@Override public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+        @SuppressLint("NewApi")
+        @Override
+        public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 
 			if (mDelegateOnScrollListener != null) { // delegate
 				mDelegateOnScrollListener.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
@@ -205,8 +217,9 @@ public class PinnedSectionListView extends ListView {
 		mTranslateY = 0;
 
 		// initialize pinned shadow
-		pinnedShadow.position = position;
 		pinnedShadow.view = pinnedView;
+		pinnedShadow.position = position;
+		pinnedShadow.id = getAdapter().getItemId(position);
 
 		// store pinned shadow
 		mPinnedShadow = pinnedShadow;
@@ -258,6 +271,63 @@ public class PinnedSectionListView extends ListView {
 		} else {
 			mDelegateOnScrollListener = listener;
 		}
+	}
+
+	private boolean isPinnedViewTouched(View view, int x, int y) {
+	    view.getHitRect(mTouchRect);
+	    mTouchRect.top += mTranslateY;
+	    mTouchRect.bottom += mTranslateY;
+	    return mTouchRect.contains(x, y);
+	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+
+	    int x = (int) ev.getX();
+	    int y = (int) ev.getY();
+
+	    // TODO cancel old target if UP event
+
+	    // create new touch target, if needed
+	    if (mTouchTarget == null
+	            && mPinnedShadow != null
+	            && isPinnedViewTouched(mPinnedShadow.view, x, y)) {
+	            mTouchTarget = mPinnedShadow.view;
+	    }
+
+	    // dispatch event to the new touch target, if such
+	    if (mTouchTarget != null) {
+	        if (isPinnedViewTouched(mTouchTarget, x, y)) {
+	            mTouchTarget.dispatchTouchEvent(ev);
+	        }
+
+	        // complete touch sequence properly
+	        if (ev.getAction() == MotionEvent.ACTION_UP || ev.getAction() == MotionEvent.ACTION_CANCEL) {
+	            mTouchTarget = null;
+	            super.dispatchTouchEvent(ev);
+	            performPinnedItemClick();
+	        }
+	        return true;
+	    }
+
+	    // call super if this was not our pinned view
+        return super.dispatchTouchEvent(ev);
+	}
+
+	protected boolean performPinnedItemClick() {
+	    if (mPinnedShadow == null) return false;
+
+	    OnItemClickListener listener = getOnItemClickListener();
+        if (listener != null) {
+            View view =  mPinnedShadow.view;
+            playSoundEffect(SoundEffectConstants.CLICK);
+            if (view != null) {
+                view.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_CLICKED);
+            }
+            listener.onItemClick(this, view, mPinnedShadow.position, mPinnedShadow.id);
+            return true;
+        }
+        return false;
 	}
 
 	@Override

@@ -25,38 +25,43 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hb.examples.pinnedsection.R;
 import com.hb.views.PinnedSectionListView.PinnedSectionListAdapter;
 
-public class PinnedSectionListActivity extends ListActivity {
+public class PinnedSectionListActivity extends ListActivity implements OnClickListener {
 
-	private static class MyPinnedSectionListAdapter extends ArrayAdapter<Item> implements PinnedSectionListAdapter {
-		
-		private static final int[] COLORS = new int[] {
-			R.color.green_light, R.color.orange_light,
-			R.color.blue_light, R.color.red_light };
-		
+    private static final int[] COLORS = new int[] {
+        R.color.green_light, R.color.orange_light,
+        R.color.blue_light, R.color.red_light };
+
+	private class MyPinnedSectionListAdapter extends ArrayAdapter<Item> implements PinnedSectionListAdapter {
+
 		public MyPinnedSectionListAdapter(Context context, int resource, int textViewResourceId, List<Item> objects) {
 			super(context, resource, textViewResourceId, objects);
 		}
-		
+
 		@Override public View getView(int position, View convertView, ViewGroup parent) {
 			TextView view = (TextView) super.getView(position, convertView, parent);
 			view.setTextColor(Color.DKGRAY);
+			view.setTag("" + position);
 			if (getItem(position).type == Item.SECTION) {
+			    //view.setOnClickListener(PinnedSectionListActivity.this);
 				view.setBackgroundColor(parent.getResources().getColor(COLORS[position % COLORS.length]));
 			}
 			return view;
 		}
-		
+
 		@Override public int getViewTypeCount() {
 			return 2;
 		}
-		
+
 		@Override public int getItemViewType(int position) {
 			return getItem(position).type;
 		}
@@ -65,24 +70,24 @@ public class PinnedSectionListActivity extends ListActivity {
 			return viewType == Item.SECTION;
 		}
 	}
-	
+
 	private static class Item {
 		public static final int ITEM = 0;
 		public static final int SECTION = 1;
-		
+
 		public final int type;
 		public final String text;
-		
+
 		public Item(int type, String text) {
 			this.type = type;
 			this.text = text;
 		}
-		
+
 		@Override public String toString() {
 			return text;
 		}
 	}
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -90,6 +95,11 @@ public class PinnedSectionListActivity extends ListActivity {
 		MyPinnedSectionListAdapter adapter = new MyPinnedSectionListAdapter(
 				this, android.R.layout.simple_list_item_1, android.R.id.text1, prepareItems());
 		setListAdapter(adapter);
+	}
+
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+	    Toast.makeText(this, "Item: " + position, Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
@@ -108,5 +118,10 @@ public class PinnedSectionListActivity extends ListActivity {
 		}
 		return result;
 	}
-	
+
+    @Override
+    public void onClick(View v) {
+        Toast.makeText(this, "Item: " + v.getTag(), Toast.LENGTH_SHORT).show();
+    }
+
 }
