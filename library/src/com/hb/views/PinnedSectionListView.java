@@ -29,6 +29,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.AbsListView;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
@@ -103,7 +104,12 @@ public class PinnedSectionListView extends ListView {
             }
 
             // get expected adapter or fail fast
-            PinnedSectionListAdapter adapter = (PinnedSectionListAdapter) view.getAdapter();
+            PinnedSectionListAdapter adapter = null;
+				if(view.getAdapter() instanceof HeaderViewListAdapter) {
+					adapter = (PinnedSectionListAdapter) ((HeaderViewListAdapter)view.getAdapter()).getWrappedAdapter();
+				} else {
+					adapter = (PinnedSectionListAdapter) view.getAdapter();
+				}
             if (adapter == null || visibleItemCount == 0) return; // nothing to do
 
             final boolean isFirstVisibleItemSection =
@@ -297,6 +303,14 @@ public class PinnedSectionListView extends ListView {
 			    recreatePinnedShadow();
 			}
 		});
+	}
+
+	@Override
+	public ListAdapter getAdapter() {
+		if(super.getAdapter() instanceof HeaderViewListAdapter) {
+			return ((HeaderViewListAdapter) super.getAdapter()).getWrappedAdapter();
+		}
+		return super.getAdapter();
 	}
 
 	@Override
