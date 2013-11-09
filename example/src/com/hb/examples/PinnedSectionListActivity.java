@@ -30,6 +30,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
@@ -171,6 +172,14 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 		    isFastScroll = savedInstanceState.getBoolean("isFastScroll");
 		    addPadding = savedInstanceState.getBoolean("addPadding");
 		}
+
+		TextView headerView = new TextView(this);
+		headerView.setText("HEADER");
+		TextView footerView = new TextView(this);
+		footerView.setText("FOOTER");
+
+		getListView().addHeaderView(headerView, null, false);
+		getListView().addFooterView(footerView, null, false);
 		initializeAdapter();
 		initializePadding();
 	}
