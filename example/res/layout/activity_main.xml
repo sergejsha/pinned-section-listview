@@ -5,5 +5,4 @@
     android:headerDividersEnabled="false"
     android:footerDividersEnabled="false"
     android:divider="@null"
-    android:listSelector="@android:color/transparent"
     />

@@ -36,6 +36,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hb.examples.pinnedsection.R;
+import com.hb.views.PinnedSectionListView;
 import com.hb.views.PinnedSectionListView.PinnedSectionListAdapter;
 
 public class PinnedSectionListActivity extends ListActivity implements OnClickListener {
@@ -162,6 +163,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 
 	private boolean isFastScroll;
 	private boolean addPadding;
+	private boolean isShadowVisible = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -170,6 +172,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 		if (savedInstanceState != null) {
 		    isFastScroll = savedInstanceState.getBoolean("isFastScroll");
 		    addPadding = savedInstanceState.getBoolean("addPadding");
+		    isShadowVisible = savedInstanceState.getBoolean("isShadowVisible");
 		}
 		initializeAdapter();
 		initializePadding();
@@ -180,6 +183,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 	    super.onSaveInstanceState(outState);
 	    outState.putBoolean("isFastScroll", isFastScroll);
 	    outState.putBoolean("addPadding", addPadding);
+	    outState.putBoolean("isShadowVisible", isShadowVisible);
 	}
 
 	@Override
@@ -193,22 +197,29 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 		getMenuInflater().inflate(R.menu.main, menu);
 		menu.getItem(0).setChecked(isFastScroll);
 		menu.getItem(1).setChecked(addPadding);
+		menu.getItem(2).setChecked(isShadowVisible);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-
-	    if (item.getItemId() == R.id.action_fastscroll) {
-	        isFastScroll = !isFastScroll;
-	        item.setChecked(isFastScroll);
-	        initializeAdapter();
-	    } else {
-	        addPadding = !addPadding;
-	        item.setChecked(addPadding);
-	        initializePadding();
+	    switch (item.getItemId()) {
+    	    case R.id.action_fastscroll:
+    	        isFastScroll = !isFastScroll;
+    	        item.setChecked(isFastScroll);
+    	        initializeAdapter();
+    	        break;
+    	    case R.id.action_addpadding:
+    	        addPadding = !addPadding;
+    	        item.setChecked(addPadding);
+    	        initializePadding();
+    	        break;
+    	    case R.id.action_showShadow:
+    	        isShadowVisible = !isShadowVisible;
+    	        item.setChecked(isShadowVisible);
+    	        ((PinnedSectionListView)getListView()).setShadowVisible(isShadowVisible);
+    	        break;
 	    }
-
 	    return true;
 	}
 
