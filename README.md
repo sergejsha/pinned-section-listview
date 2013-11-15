@@ -8,6 +8,15 @@ of the list until at least one item of that section is visible.
 ![Alt text](screen2.png)&nbsp;
 ![Alt text](screen3.png)
 
+Features
+========
+This list properly implements many features which are missing from other implementations. These are
+ * Fast scroll
+ * Headers and footers
+ * Clickable pinned sections
+
+Besides this it doesn't create any unnecessary views, layouts etc. It's really lean.
+
 Watch [this video][1] to see `PinnedSectionListView` in action.
 
 Usage
@@ -37,15 +46,6 @@ Usage
         }
 
 That's all. You are done! A working example can also be found in `example` folder. 
-
-Features
-========
-This list properly implements many features which are missing from other implementations. These are
- * Fast scroll
- * Headers and footers
- * Clickable pinned sections
-
-Besides this it doesn't create any unnecessary views, layouts etc. It's really lean.
 
 Used by
 =======
