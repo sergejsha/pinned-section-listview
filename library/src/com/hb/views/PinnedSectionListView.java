@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.AbsListView;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
@@ -101,11 +102,11 @@ public class PinnedSectionListView extends ListView {
             }
 
             // get expected adapter or fail fast
-            PinnedSectionListAdapter adapter = (PinnedSectionListAdapter) view.getAdapter();
+            ListAdapter adapter = getAdapter();
             if (adapter == null || visibleItemCount == 0) return; // nothing to do
 
             final boolean isFirstVisibleItemSection =
-                    adapter.isItemViewTypePinned(adapter.getItemViewType(firstVisibleItem));
+                    isItemViewTypePinned(adapter, adapter.getItemViewType(firstVisibleItem));
 
             if (isFirstVisibleItemSection) {
                 View sectionView = getChildAt(0);
@@ -275,17 +276,17 @@ public class PinnedSectionListView extends ListView {
     }
 
 	int findFirstVisibleSectionPosition(int firstVisibleItem, int visibleItemCount) {
-		PinnedSectionListAdapter adapter = (PinnedSectionListAdapter) getAdapter();
+		ListAdapter adapter = getAdapter();
 		for (int childIndex = 0; childIndex < visibleItemCount; childIndex++) {
 			int position = firstVisibleItem + childIndex;
 			int viewType = adapter.getItemViewType(position);
-			if (adapter.isItemViewTypePinned(viewType)) return position;
+			if (isItemViewTypePinned(adapter, viewType)) return position;
 		}
 		return -1;
 	}
 
 	int findCurrentSectionPosition(int fromPosition) {
-		PinnedSectionListAdapter adapter = (PinnedSectionListAdapter) getAdapter();
+		ListAdapter adapter = getAdapter();
 
 		if (adapter instanceof SectionIndexer) {
 			// try fast way by asking section indexer
@@ -293,7 +294,7 @@ public class PinnedSectionListView extends ListView {
 			int sectionPosition = indexer.getSectionForPosition(fromPosition);
 			int itemPosition = indexer.getPositionForSection(sectionPosition);
 			int typeView = adapter.getItemViewType(itemPosition);
-			if (adapter.isItemViewTypePinned(typeView)) {
+			if (isItemViewTypePinned(adapter, typeView)) {
 				return itemPosition;
 			} // else, no luck
 		}
@@ -301,7 +302,7 @@ public class PinnedSectionListView extends ListView {
 		// try slow way by looking through to the next section item above
 		for (int position=fromPosition; position>=0; position--) {
 			int viewType = adapter.getItemViewType(position);
-			if (adapter.isItemViewTypePinned(viewType)) return position;
+			if (isItemViewTypePinned(adapter, viewType)) return position;
 		}
 		return -1; // no candidate found
 	}
@@ -500,6 +501,13 @@ public class PinnedSectionListView extends ListView {
             return true;
         }
         return false;
+    }
+
+    public static boolean isItemViewTypePinned(ListAdapter adapter, int viewType) {
+        if (adapter instanceof HeaderViewListAdapter) {
+            adapter = ((HeaderViewListAdapter)adapter).getWrappedAdapter();
+        }
+        return ((PinnedSectionListAdapter) adapter).isItemViewTypePinned(viewType);
     }
 
 }

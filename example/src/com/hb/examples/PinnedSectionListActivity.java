@@ -24,12 +24,14 @@ import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
@@ -161,6 +163,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 
 	}
 
+	private boolean hasHeaderAndFooter;
 	private boolean isFastScroll;
 	private boolean addPadding;
 	private boolean isShadowVisible = true;
@@ -173,23 +176,30 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 		    isFastScroll = savedInstanceState.getBoolean("isFastScroll");
 		    addPadding = savedInstanceState.getBoolean("addPadding");
 		    isShadowVisible = savedInstanceState.getBoolean("isShadowVisible");
+		    hasHeaderAndFooter = savedInstanceState.getBoolean("hasHeaderAndFooter");
 		}
+		initializeHeaderAndFooter();
 		initializeAdapter();
 		initializePadding();
 	}
 
-	@Override
+    @Override
 	protected void onSaveInstanceState(Bundle outState) {
 	    super.onSaveInstanceState(outState);
 	    outState.putBoolean("isFastScroll", isFastScroll);
 	    outState.putBoolean("addPadding", addPadding);
 	    outState.putBoolean("isShadowVisible", isShadowVisible);
+	    outState.putBoolean("hasHeaderAndFooter", hasHeaderAndFooter);
 	}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
-	    Item item = (Item) getListAdapter().getItem(position);
-	    Toast.makeText(this, "Item " + position + ": " + item.text, Toast.LENGTH_SHORT).show();
+	    Item item = (Item) getListView().getAdapter().getItem(position);
+	    if (item != null) {
+	        Toast.makeText(this, "Item " + position + ": " + item.text, Toast.LENGTH_SHORT).show();
+	    } else {
+	        Toast.makeText(this, "Item " + position, Toast.LENGTH_SHORT).show();
+	    }
 	}
 
 	@Override
@@ -219,6 +229,11 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
     	        item.setChecked(isShadowVisible);
     	        ((PinnedSectionListView)getListView()).setShadowVisible(isShadowVisible);
     	        break;
+    	    case R.id.action_showHeaderAndFooter:
+    	        hasHeaderAndFooter = !hasHeaderAndFooter;
+    	        item.setChecked(hasHeaderAndFooter);
+    	        initializeHeaderAndFooter();
+    	        break;
 	    }
 	    return true;
 	}
@@ -228,6 +243,27 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 	    int padding = addPadding ? (int) (16 * density) : 0;
 	    getListView().setPadding(padding, padding, padding, padding);
 	}
+
+    private void initializeHeaderAndFooter() {
+        setListAdapter(null);
+        if (hasHeaderAndFooter) {
+            ListView list = getListView();
+
+            LayoutInflater inflater = LayoutInflater.from(this);
+            TextView header1 = (TextView) inflater.inflate(android.R.layout.simple_list_item_1, list, false);
+            header1.setText("First header");
+            list.addHeaderView(header1);
+
+            TextView header2 = (TextView) inflater.inflate(android.R.layout.simple_list_item_1, list, false);
+            header2.setText("Second header");
+            list.addHeaderView(header2);
+
+            TextView footer = (TextView) inflater.inflate(android.R.layout.simple_list_item_1, list, false);
+            footer.setText("Single foolter");
+            list.addFooterView(footer);
+        }
+        initializeAdapter();
+    }
 
     @SuppressLint("NewApi")
     private void initializeAdapter() {
