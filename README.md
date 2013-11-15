@@ -38,6 +38,15 @@ Usage
 
 That's all. You are done! A working example can also be found in `example` folder. 
 
+Features
+========
+This list properly implements many features which are missing from other implementations. These are
+ * Fast scroll
+ * Headers and footers
+ * Clickable pinned sections
+
+Besides this it doesn't create any unnecessary views, layouts etc. It's really lean.
+
 Used by
 =======
 Be first to let us know if you use this library in your application and we will mention it here.
