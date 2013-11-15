@@ -31,7 +31,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
@@ -259,7 +258,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
             list.addHeaderView(header2);
 
             TextView footer = (TextView) inflater.inflate(android.R.layout.simple_list_item_1, list, false);
-            footer.setText("Single foolter");
+            footer.setText("Single footer");
             list.addFooterView(footer);
         }
         initializeAdapter();
