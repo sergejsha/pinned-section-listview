@@ -49,7 +49,9 @@ That's all. You are done! A working example can also be found in `example` folde
 
 Used by
 =======
-Be first to let us know if you use this library in your application and we will mention it here.
+Let us know if you use this library in your application and we will mention it here.
+
+[Grocery Sum][2]
 
 License
 =======
@@ -70,3 +72,4 @@ License
 
 
 [1]: http://www.youtube.com/watch?v=mI3DpuoIIhQ
+[2]: https://play.google.com/store/apps/details?id=org.codechimp.grocerysum
