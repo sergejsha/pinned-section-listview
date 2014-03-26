@@ -272,7 +272,7 @@ public class PinnedSectionListView extends ListView {
             }
         }
 
-        if (sectionView.getTop() > getPaddingTop()) {
+        if (mPinnedSection != null && sectionView.getTop() > getPaddingTop()) {
             final int bottom = mPinnedSection.view.getBottom() + getPaddingTop();
             mSectionsDistanceY = sectionView.getTop() - bottom;
             if (mSectionsDistanceY < 0) {
