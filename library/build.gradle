@@ -1,0 +1,23 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.9.1'
+    }
+}
+
+apply plugin: 'android-library'
+
+android {
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+                java.srcDirs = ['src']
+        }
+    }
+    compileSdkVersion 17
+    buildToolsVersion '19.0.3'
+}
+
+android.libraryVariants
