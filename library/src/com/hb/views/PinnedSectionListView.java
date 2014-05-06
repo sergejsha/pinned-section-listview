@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.AbsListView;
 import android.widget.HeaderViewListAdapter;
@@ -212,6 +213,12 @@ public class PinnedSectionListView extends ListView {
 		// measure & layout
 		int ws = MeasureSpec.makeMeasureSpec(getWidth() - getListPaddingLeft() - getListPaddingRight(), MeasureSpec.EXACTLY);
 		int hs = MeasureSpec.makeMeasureSpec(heightSize, heightMode);
+        //patch a phantom crash on Android 2.3
+        ViewGroup.LayoutParams lparams = pinnedView.getLayoutParams();
+        if(lparams == null) {
+            lparams = new ViewGroup.LayoutParams(ws, hs);
+            pinnedView.setLayoutParams(lparams);
+        }
 		pinnedView.measure(ws, hs);
 		pinnedView.layout(0, 0, pinnedView.getMeasuredWidth(), pinnedView.getMeasuredHeight());
 		mTranslateY = 0;
