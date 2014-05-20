@@ -571,25 +571,27 @@ public class PinnedSectionListView extends ListView {
      * Sets the selected item and positions the selection y pixels from the top edge of the
      * ListView, or bottom edge of the pinned view iff it exists. (If in touch mode, the item will
      * not be selected but it will still be positioned appropriately.)
-     * 
+     *
      * @param position Index (starting at 0) of the data item to be selected.
      * @param y The distance from the top edge of the ListView (plus padding) that the item will be
      *            positioned.
+     * @param adjustForHeader If true, will additionally scroll down so first item will be below header
      */
-    @Override
-    public void setSelectionFromTop(final int position, final int y) {
-        super.setSelectionFromTop(position, y);
+    public void setSelectionFromTop(final int position, final int y, boolean adjustForHeader) {
+        setSelectionFromTop(position, y);
 
-        post(new Runnable() {
-            @Override
-            public void run() {
-                // do additional scrolling if a pinned view is displayed
-                int pinnedOffset = (mPinnedSection == null ? 0 : mPinnedSection.view.getBottom() + getDividerHeight());
-                if (pinnedOffset > 0) {
-                    PinnedSectionListView.super.setSelectionFromTop(position, y + pinnedOffset);
+        if (adjustForHeader) {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    // do additional scrolling if a pinned view is displayed
+                    int pinnedOffset = (mPinnedSection == null ? 0 : mPinnedSection.view.getBottom() + getDividerHeight());
+                    if (pinnedOffset > 0) {
+                        PinnedSectionListView.super.setSelectionFromTop(position, y + pinnedOffset);
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     /**
