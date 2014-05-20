@@ -4,5 +4,6 @@
     android:layout_height="wrap_content" 
     android:headerDividersEnabled="false"
     android:footerDividersEnabled="false"
-    android:divider="@null"
+    android:divider="#FFF"
+    android:dividerHeight="10dp"
     />

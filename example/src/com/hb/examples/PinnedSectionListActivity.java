@@ -233,6 +233,14 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
     	        item.setChecked(hasHeaderAndFooter);
     	        initializeHeaderAndFooter();
     	        break;
+            case R.id.action_scroll_13:
+                getListView().setSelectionFromTop(13,0);
+                break;
+            case R.id.action_scroll_13_50:
+                getListView().setSelectionFromTop(13, 50);
+                break;
+            case R.id.action_scroll_20:
+                getListView().setSelection(20);
 	    }
 	    return true;
 	}

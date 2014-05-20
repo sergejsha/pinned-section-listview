@@ -113,7 +113,7 @@ public class PinnedSectionListView extends ListView {
                 if (sectionView.getTop() == getPaddingTop()) { // view sticks to the top, no need for pinned shadow
                     destroyPinnedShadow();
                 } else { // section doesn't stick to the top, make sure we have a pinned shadow
-                    ensureShadowForPosition(firstVisibleItem, firstVisibleItem, visibleItemCount);
+                    ensureShadowForFirstItem(firstVisibleItem, firstVisibleItem, visibleItemCount);
                 }
 
             } else { // section is not at the first visible position
@@ -124,17 +124,23 @@ public class PinnedSectionListView extends ListView {
                     destroyPinnedShadow();
                 }
             }
-		};
-
+		}
 	};
+
+    private Runnable recreatePinnedShadow = new Runnable() {
+        @Override
+        public void run() {
+            recreatePinnedShadow();
+        }
+    };
 
 	/** Default change observer. */
     private final DataSetObserver mDataSetObserver = new DataSetObserver() {
         @Override public void onChanged() {
-            recreatePinnedShadow();
+            post(recreatePinnedShadow);
         };
         @Override public void onInvalidated() {
-            recreatePinnedShadow();
+            post(recreatePinnedShadow);
         }
     };
 
@@ -199,6 +205,7 @@ public class PinnedSectionListView extends ListView {
 		LayoutParams layoutParams = (LayoutParams) pinnedView.getLayoutParams();
 		if (layoutParams == null) { // create default layout params
 		    layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+            pinnedView.setLayoutParams(layoutParams);
 		}
 
 		int heightMode = MeasureSpec.getMode(layoutParams.height);
@@ -234,15 +241,59 @@ public class PinnedSectionListView extends ListView {
 	    }
 	}
 
-	/** Makes sure we have an actual pinned shadow for given position. */
-    void ensureShadowForPosition(int sectionPosition, int firstVisibleItem, int visibleItemCount) {
-        if (visibleItemCount < 2) { // no need for creating shadow at all, we have a single visible item
+    /**
+     * Makes sure we have a pinned header for the first position.
+     */
+    void ensureShadowForFirstItem(int sectionPosition, int firstVisibleItem, int visibleItemCount) {
+        // if the first item is a section, only recreate if getTop() < 0
+
+        View sectionView = getChildAt(0);
+
+        // when scrolling downwards, invalidate header iff sectionView's top exceeds view boundaries
+        if (mPinnedSection != null && mPinnedSection.position != sectionPosition
+                && sectionView.getTop() <= getPaddingTop()) {
             destroyPinnedShadow();
-            return;
+        }
+        // when scrolling upwards, invalidate header as soon as sectionView leaves the building
+        else if (mPinnedSection != null && mPinnedSection.position == sectionPosition
+                && sectionView.getTop() > getPaddingTop()) {
+            destroyPinnedShadow();
         }
 
-        if (mPinnedSection != null
-                && mPinnedSection.position != sectionPosition) { // invalidate shadow, if required
+        // create header based on the view of the current section position
+        if (mPinnedSection == null && sectionView.getTop() <= getPaddingTop()) {
+            createPinnedShadow(sectionPosition);
+        }
+        // create header based on the view of the previous section position
+        else if (mPinnedSection == null && sectionView.getTop() > getPaddingTop()) {
+            int prevSection = findPreviousVisibleSectionPosition(sectionPosition);
+            if (prevSection > -1) {
+                createPinnedShadow(prevSection);
+            }
+        }
+
+        if (mPinnedSection != null && sectionView.getTop() > getPaddingTop()) {
+            final int bottom = mPinnedSection.view.getBottom() + getPaddingTop();
+            mSectionsDistanceY = sectionView.getTop() - bottom;
+            if (mSectionsDistanceY < 0) {
+                // next section overlaps pinned shadow, move it up
+                mTranslateY = mSectionsDistanceY;
+            } else {
+                // next section does not overlap with pinned, stick to top
+                mTranslateY = 0;
+            }
+        } else {
+            mTranslateY = 0;
+            mSectionsDistanceY = Integer.MAX_VALUE;
+        }
+
+    }
+
+    /** Makes sure we have an actual pinned shadow for given position. */
+    void ensureShadowForPosition(int sectionPosition, int firstVisibleItem, int visibleItemCount) {
+
+        if (mPinnedSection != null && mPinnedSection.position != sectionPosition) {
+            // invalidate shadow, if required
             destroyPinnedShadow();
         }
 
@@ -272,7 +323,16 @@ public class PinnedSectionListView extends ListView {
                 mSectionsDistanceY = Integer.MAX_VALUE;
             }
         }
+    }
 
+    int findPreviousVisibleSectionPosition(int fromPosition) {
+        ListAdapter adapter = getAdapter();
+        for (int childIndex = fromPosition - 1; childIndex >= 0; childIndex--) {
+            int viewType = adapter.getItemViewType(childIndex);
+            if (isItemViewTypePinned(adapter, viewType))
+                return childIndex;
+        }
+        return -1;
     }
 
 	int findFirstVisibleSectionPosition(int firstVisibleItem, int visibleItemCount) {
@@ -331,11 +391,8 @@ public class PinnedSectionListView extends ListView {
 	@Override
 	public void onRestoreInstanceState(Parcelable state) {
 		super.onRestoreInstanceState(state);
-		post(new Runnable() {
-			@Override public void run() { // restore pinned view after configuration change
-			    recreatePinnedShadow();
-			}
-		});
+        // restore pinned view after configuration change
+        post(recreatePinnedShadow);
 	}
 
 	@Override
@@ -510,4 +567,42 @@ public class PinnedSectionListView extends ListView {
         return ((PinnedSectionListAdapter) adapter).isItemViewTypePinned(viewType);
     }
 
+    /**
+     * Sets the selected item and positions the selection y pixels from the top edge of the
+     * ListView, or bottom edge of the pinned view iff it exists. (If in touch mode, the item will
+     * not be selected but it will still be positioned appropriately.)
+     *
+     * @param position Index (starting at 0) of the data item to be selected.
+     * @param y The distance from the top edge of the ListView (plus padding) that the item will be
+     *            positioned.
+     * @param adjustForHeader If true, will additionally scroll down so first item will be below header
+     */
+    public void setSelectionFromTop(final int position, final int y, boolean adjustForHeader) {
+        setSelectionFromTop(position, y);
+
+        if (adjustForHeader) {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    // do additional scrolling if a pinned view is displayed
+                    int pinnedOffset = (mPinnedSection == null ? 0 : mPinnedSection.view.getBottom() + getDividerHeight());
+                    if (pinnedOffset > 0) {
+                        PinnedSectionListView.super.setSelectionFromTop(position, y + pinnedOffset);
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Sets the currently selected item. If in touch mode, the item will not be selected but it will
+     * still be positioned appropriately. If the specified selection position is less than 0, then
+     * the item at position 0 will be selected.
+     * 
+     * @param position Index (starting at 0) of the data item to be selected.
+     */
+    @Override
+    public void setSelection(int position) {
+        setSelectionFromTop(position, 0);
+    }
 }

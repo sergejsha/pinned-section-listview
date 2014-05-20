@@ -23,5 +23,20 @@
         android:showAsAction="never"
         android:title="@string/action_showHeaderAndFooter"
         android:checkable="true"/>
+    
+    <item
+        android:id="@+id/action_scroll_13"
+        android:showAsAction="never"
+        android:title="Scroll to item 13 (B)"/>
+    
+    <item
+        android:id="@+id/action_scroll_13_50"
+        android:showAsAction="never"
+        android:title="Colliding scroll to item 13 (B)"/>
+    
+    <item
+        android:id="@+id/action_scroll_20"
+        android:showAsAction="never"
+        android:title="Scroll to item 20 (B-6)"/>
 
 </menu>
