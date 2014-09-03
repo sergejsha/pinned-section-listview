@@ -277,10 +277,13 @@ public class PinnedSectionListView extends ListView {
 
 	int findFirstVisibleSectionPosition(int firstVisibleItem, int visibleItemCount) {
 		ListAdapter adapter = getAdapter();
+		int adapterSize = adapter.getCount();
 		for (int childIndex = 0; childIndex < visibleItemCount; childIndex++) {
 			int position = firstVisibleItem + childIndex;
-			int viewType = adapter.getItemViewType(position);
-			if (isItemViewTypePinned(adapter, viewType)) return position;
+			if (position < adapterSize) {
+				int viewType = adapter.getItemViewType(position);
+				if (isItemViewTypePinned(adapter, viewType)) return position;
+			}
 		}
 		return -1;
 	}
