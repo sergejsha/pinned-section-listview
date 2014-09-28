@@ -1,7 +1,7 @@
 Introduction
 ============
 
-Easy to use ListView with pinned sections for Android. Pinned section is a header view which sticks to the top
+Easy to use ListView with pinned sections for Android 2.1 and higher. Pinned section is a header view which sticks to the top
 of the list until at least one item of that section is visible.
 
 ![Alt text](screen1.png)&nbsp;
@@ -23,16 +23,19 @@ Usage
 =====
  1. Replace standard `ListView` with `com.hb.views.PinnedSectionListView` in your `layout.xml` file.
 
+        ```xml
         <com.hb.views.PinnedSectionListView
             android:id="@android:id/list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" 
             />
-  
+        ```
+        
  2. Extend your `ListAdapter` in a way that it implements `PinnedSectionListAdapter` interface, in addition to
     what it already implements. Basically you need to add a single `isItemViewTypePinned(int viewType)` 
     method. This method must return `true` for all view types which have to be pinned.
 
+        ```java
         // Our adapter class implements 'PinnedSectionListAdapter' interface
         class MyPinnedSectionListAdapter extends BaseAdapter implements PinnedSectionListAdapter {
         
@@ -44,6 +47,7 @@ Usage
                  return viewType == <type to be pinned>;
              }
         }
+        ```
 
 That's all. You are done! A working example can also be found in `example` folder. 
 
@@ -56,7 +60,7 @@ Let us know if you use this library in your application and we will mention it h
 License
 =======
 
-    Copyright 2013 Sergej Shafarenka, halfbit.de
+    Copyright 2013-2014 Sergej Shafarenka, halfbit.de
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
