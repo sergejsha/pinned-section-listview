@@ -50,8 +50,14 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 
         public SimpleAdapter(Context context, int resource, int textViewResourceId) {
             super(context, resource, textViewResourceId);
+            generateDataset('A', 'Z', false);
+        }
 
-            final int sectionsNumber = 'Z' - 'A' + 1;
+        public void generateDataset(char from, char to, boolean clear) {
+        	
+        	if (clear) clear();
+        	
+            final int sectionsNumber = to - from + 1;
             prepareSections(sectionsNumber);
 
             int sectionPosition = 0, listPosition = 0;
@@ -73,7 +79,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
                 sectionPosition++;
             }
         }
-
+        
         protected void prepareSections(int sectionsNumber) { }
         protected void onSectionAdded(Item section, int sectionPosition) { }
 
@@ -166,6 +172,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 	private boolean isFastScroll;
 	private boolean addPadding;
 	private boolean isShadowVisible = true;
+	private int mDatasetUpdateCount;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -233,10 +240,25 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
     	        item.setChecked(hasHeaderAndFooter);
     	        initializeHeaderAndFooter();
     	        break;
+    	    case R.id.action_updateDataset:
+    	    	updateDataset();
+    	    	break;
 	    }
 	    return true;
 	}
 
+	private void updateDataset() {
+		mDatasetUpdateCount++;
+		SimpleAdapter adapter = (SimpleAdapter) getListAdapter();
+		switch (mDatasetUpdateCount % 4) {
+			case 0: adapter.generateDataset('A', 'B', true); break;
+			case 1: adapter.generateDataset('C', 'M', true); break;
+			case 2: adapter.generateDataset('P', 'Z', true); break;
+			case 3: adapter.generateDataset('A', 'Z', true); break;
+		}
+		adapter.notifyDataSetChanged();
+	}
+	
 	private void initializePadding() {
 	    float density = getResources().getDisplayMetrics().density;
 	    int padding = addPadding ? (int) (16 * density) : 0;

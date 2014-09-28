@@ -277,6 +277,9 @@ public class PinnedSectionListView extends ListView {
 
 	int findFirstVisibleSectionPosition(int firstVisibleItem, int visibleItemCount) {
 		ListAdapter adapter = getAdapter();
+		
+		if (firstVisibleItem + visibleItemCount >= adapter.getCount()) return -1; // dataset has changed, no candidate
+		
 		for (int childIndex = 0; childIndex < visibleItemCount; childIndex++) {
 			int position = firstVisibleItem + childIndex;
 			int viewType = adapter.getItemViewType(position);
@@ -288,6 +291,8 @@ public class PinnedSectionListView extends ListView {
 	int findCurrentSectionPosition(int fromPosition) {
 		ListAdapter adapter = getAdapter();
 
+		if (fromPosition >= adapter.getCount()) return -1; // dataset has changed, no candidate
+		
 		if (adapter instanceof SectionIndexer) {
 			// try fast way by asking section indexer
 			SectionIndexer indexer = (SectionIndexer) adapter;

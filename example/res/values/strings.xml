@@ -6,5 +6,6 @@
     <string name="action_addpadding">Add padding</string>
     <string name="action_showShadow">Show shadow</string>
     <string name="action_showHeaderAndFooter">Show Header &amp; Footer</string>
+    <string name="action_updateDataset">Update dataset</string>
 
 </resources>
