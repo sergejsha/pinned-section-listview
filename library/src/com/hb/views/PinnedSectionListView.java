@@ -496,7 +496,7 @@ public class PinnedSectionListView extends ListView {
         if (mPinnedSection == null) return false;
 
         OnItemClickListener listener = getOnItemClickListener();
-        if (listener != null) {
+        if (listener != null && getAdapter().isEnabled(mPinnedSection.position)) {
             View view =  mPinnedSection.view;
             playSoundEffect(SoundEffectConstants.CLICK);
             if (view != null) {
