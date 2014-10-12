@@ -1,3 +1,5 @@
+[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=beworker&url=https://github.com/beworker/pinned-section-listview&title=pinned-section-listview&language=java&tags=github&category=software)
+
 Introduction
 ============
 
