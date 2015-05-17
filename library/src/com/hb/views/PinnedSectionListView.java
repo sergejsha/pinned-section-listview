@@ -340,16 +340,6 @@ public class PinnedSectionListView extends ListView {
 	}
 
 	@Override
-	public void onRestoreInstanceState(Parcelable state) {
-		super.onRestoreInstanceState(state);
-		post(new Runnable() {
-			@Override public void run() { // restore pinned view after configuration change
-			    recreatePinnedShadow();
-			}
-		});
-	}
-
-	@Override
 	public void setAdapter(ListAdapter adapter) {
 
 	    // assert adapter in debug mode
@@ -370,18 +360,6 @@ public class PinnedSectionListView extends ListView {
 		if (oldAdapter != adapter) destroyPinnedShadow();
 
 		super.setAdapter(adapter);
-	}
-
-	@Override
-	protected void onLayout(boolean changed, int l, int t, int r, int b) {
-	    super.onLayout(changed, l, t, r, b);
-        if (mPinnedSection != null) {
-            int parentWidth = r - l - getPaddingLeft() - getPaddingRight();
-            int shadowWidth = mPinnedSection.view.getWidth();
-            if (parentWidth != shadowWidth) {
-                recreatePinnedShadow();
-            }
-        }
 	}
 
 	@Override
