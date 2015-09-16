@@ -59,6 +59,7 @@ Used by
 Let us know if you use this library in your application and we will mention it here.
 
 [Grocery Sum][2]
+[Slack][3]
 
 License
 =======
@@ -80,3 +81,4 @@ License
 
 [1]: http://www.youtube.com/watch?v=mI3DpuoIIhQ
 [2]: https://play.google.com/store/apps/details?id=org.codechimp.grocerysum
+[3]: https://play.google.com/store/apps/details?id=com.Slack
