@@ -196,10 +196,10 @@ public class PinnedSectionListView extends ListView {
 		View pinnedView = getAdapter().getView(position, pinnedShadow.view, PinnedSectionListView.this);
 
 		// read layout parameters
-		LayoutParams layoutParams = (LayoutParams) pinnedView.getLayoutParams();
+		ViewGroup.LayoutParams layoutParams = (ViewGroup.LayoutParams) pinnedView.getLayoutParams();
 		if (layoutParams == null) {
-		    layoutParams = (LayoutParams) generateDefaultLayoutParams();
-		    pinnedView.setLayoutParams(layoutParams);
+		        layoutParams = (ViewGroup.LayoutParams) generateDefaultLayoutParams();
+		        pinnedView.setLayoutParams(layoutParams);
 		}
 
 		int heightMode = MeasureSpec.getMode(layoutParams.height);
