@@ -131,7 +131,7 @@ public class PinnedSectionListView extends ListView {
                     View header = getChildAt(i - firstVisibleItem);
                     float headerTop = header.getTop();
                     header.setVisibility(VISIBLE);
-                    if (headerTop < 0) {
+                    if (headerTop < getPaddingTop()) {
                         header.setVisibility(INVISIBLE);
                     }
                 }
