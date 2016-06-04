@@ -72,6 +72,12 @@ public class PinnedSectionListView extends ListView {
     private GradientDrawable mShadowDrawable;
     private int mSectionsDistanceY;
     private int mShadowHeight;
+    
+    /** Clip to padding value */
+    private boolean mClipToPadding;
+    
+    /** Check if clip to padding was set manually from xml or by call setClipToPadding() */
+    private boolean mClipToPaddingSet;
 
     /** Delegating listener, can be null. */
     OnScrollListener mDelegateOnScrollListener;
@@ -110,7 +116,11 @@ public class PinnedSectionListView extends ListView {
 
             if (isFirstVisibleItemSection) {
                 View sectionView = getChildAt(0);
-                if (sectionView.getTop() == getPaddingTop()) { // view sticks to the top, no need for pinned shadow
+                int sectionViewTop = sectionView.getTop();
+                int paddingTop = getPaddingTop();
+                if (mClipToPadding && sectionViewTop == paddingTop ||
+                        !mClipToPadding && sectionViewTop <= paddingTop && sectionViewTop >= 0) {
+                    // view sticks to the top, no need for pinned shadow
                     destroyPinnedShadow();
                 } else { // section doesn't stick to the top, make sure we have a pinned shadow
                     ensureShadowForPosition(firstVisibleItem, firstVisibleItem, visibleItemCount);
@@ -154,6 +164,9 @@ public class PinnedSectionListView extends ListView {
         setOnScrollListener(mOnScrollListener);
         mTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
         initShadow(true);
+        if (!mClipToPaddingSet) {
+            setClipToPadding(true);
+        }
     }
 
     //-- public API methods
@@ -329,6 +342,13 @@ public class PinnedSectionListView extends ListView {
                     firstVisiblePosition, getLastVisiblePosition() - firstVisiblePosition);
         }
 	}
+	
+	@Override
+    	public void setClipToPadding(boolean clipToPadding) {
+	        super.setClipToPadding(clipToPadding);
+	        mClipToPadding = clipToPadding;
+		mClipToPaddingSet = true;
+	}
 
 	@Override
 	public void setOnScrollListener(OnScrollListener listener) {
@@ -392,7 +412,7 @@ public class PinnedSectionListView extends ListView {
 
 			// prepare variables
 			int pLeft = getListPaddingLeft();
-			int pTop = getListPaddingTop();
+			int pTop = mClipToPadding ? getListPaddingTop() : 0;
 			View view = mPinnedSection.view;
 
 			// draw child
