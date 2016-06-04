@@ -124,6 +124,19 @@ public class PinnedSectionListView extends ListView {
                     destroyPinnedShadow();
                 }
             }
+            //TODO fix if the pinned view is translucent,we will see double pinned view
+            //author magicyoung6768
+            for (int i = firstVisibleItem; i < firstVisibleItem + visibleItemCount; i++) {
+                if (isItemViewTypePinned(adapter, adapter.getItemViewType(i))) {
+                    View header = getChildAt(i - firstVisibleItem);
+                    float headerTop = header.getTop();
+                    header.setVisibility(VISIBLE);
+                    if (headerTop < getPaddingTop()) {
+                        header.setVisibility(INVISIBLE);
+                    }
+                }
+            }
+            //TODO fix if the pinned view is translucent,we will see double pinned view
 		};
 
 	};
