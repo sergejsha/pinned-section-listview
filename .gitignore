@@ -4,3 +4,5 @@ gen
 .classpath
 .settings
 .DS_Store
+/.idea/
+*.iml
