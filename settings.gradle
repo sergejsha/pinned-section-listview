@@ -1,0 +1,3 @@
+include ':example', "library"
+
+rootProject.name = 'pinned-section-listview'
