@@ -1,53 +1,7 @@
 
 Features
 ========
-This list properly implements many features which are missing from other implementations. These are
- * Fast scroll
- * Headers and footers
- * Clickable pinned sections
-
-Besides this it doesn't create any unnecessary views, layouts etc. It's really lean.
-
-Watch [this video][1] to see `PinnedSectionListView` in action.
-
-Usage
-=====
- 1. Replace standard `ListView` with `com.hb.views.PinnedSectionListView` in your `layout.xml` file.
-
-```xml
-  <com.hb.views.PinnedSectionListView
-      android:id="@android:id/list"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content" 
-      />
-```
-        
- 2. Extend your `ListAdapter` in a way that it implements `PinnedSectionListAdapter` interface, in addition to
-    what it already implements. Basically you need to add a single `isItemViewTypePinned(int viewType)` 
-    method. This method must return `true` for all view types which have to be pinned.
-
-```java
-  // Our adapter class implements 'PinnedSectionListAdapter' interface
-  class MyPinnedSectionListAdapter extends BaseAdapter 
-          implements PinnedSectionListAdapter {
-  
-      ...
-    
-      // We implement this method to return 'true' for all view types we want to pin
-      @Override
-      public boolean isItemViewTypePinned(int viewType) {
-          return viewType == <type to be pinned>;
-      }
-  }
-```
-
-That's all. You are done! A working example can also be found in `example` folder. 
-
-Used by
-=======
-Let us know if you use this library in your application and we will mention it here.
-
-[Grocery Sum][2]
+This is a fork from `beworker/pinned-section-listview`,I fix double pinned view when it is translucent.
 
 License
 =======
