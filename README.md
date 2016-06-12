@@ -1,14 +1,3 @@
-[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=beworker&url=https://github.com/beworker/pinned-section-listview&title=pinned-section-listview&language=java&tags=github&category=software)
-
-Introduction
-============
-
-Easy to use ListView with pinned sections for Android 2.1 and higher. Pinned section is a header view which sticks to the top
-of the list until at least one item of that section is visible.
-
-![Alt text](screen1.png)&nbsp;
-![Alt text](screen2.png)&nbsp;
-![Alt text](screen3.png)
 
 Features
 ========
@@ -77,6 +66,3 @@ License
     See the License for the specific language governing permissions and
     limitations under the License.
 
-
-[1]: http://www.youtube.com/watch?v=mI3DpuoIIhQ
-[2]: https://play.google.com/store/apps/details?id=org.codechimp.grocerysum
