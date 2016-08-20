@@ -1,14 +1,9 @@
-[![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=beworker&url=https://github.com/beworker/pinned-section-listview&title=pinned-section-listview&language=java&tags=github&category=software)
-
-Introduction
-============
-
 Easy to use ListView with pinned sections for Android 2.1 and higher. Pinned section is a header view which sticks to the top
 of the list until at least one item of that section is visible.
 
-![Alt text](screen1.png)&nbsp;
-![Alt text](screen2.png)&nbsp;
-![Alt text](screen3.png)
+![Screenshot 1](web/screen1.png)&nbsp;
+![Screenshot 2](web/screen2.png)&nbsp;
+![Screenshot 3](web/screen3.png)
 
 Features
 ========
@@ -23,10 +18,10 @@ Watch [this video][1] to see `PinnedSectionListView` in action.
 
 Usage
 =====
- 1. Replace standard `ListView` with `com.hb.views.PinnedSectionListView` in your `layout.xml` file.
+ 1. Replace standard `ListView` with `de.halfbit.pinnedsection.PinnedSectionListView` in your `layout.xml` file.
 
 ```xml
-  <com.hb.views.PinnedSectionListView
+  <de.halfbit.pinnedsection.PinnedSectionListView
       android:id="@android:id/list"
       android:layout_width="match_parent"
       android:layout_height="wrap_content" 
@@ -59,11 +54,12 @@ Used by
 Let us know if you use this library in your application and we will mention it here.
 
 [Grocery Sum][2]
+[Slack][3]
 
 License
 =======
 
-    Copyright 2013-2014 Sergej Shafarenka, halfbit.de
+    Copyright 2013-2016 Sergej Shafarenka, halfbit.de
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -80,3 +76,4 @@ License
 
 [1]: http://www.youtube.com/watch?v=mI3DpuoIIhQ
 [2]: https://play.google.com/store/apps/details?id=org.codechimp.grocerysum
+[3]: https://play.google.com/store/apps/details?id=com.Slack

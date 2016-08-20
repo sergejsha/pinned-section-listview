@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-package com.hb.examples;
-
-import java.util.Locale;
+package de.halfbit.pinnedsection.examples;
 
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
@@ -36,9 +34,11 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.hb.examples.pinnedsection.R;
-import com.hb.views.PinnedSectionListView;
-import com.hb.views.PinnedSectionListView.PinnedSectionListAdapter;
+import java.util.Locale;
+
+import de.halfbit.pinnedsection.PinnedSectionListView;
+import de.halfbit.pinnedsection.PinnedSectionListView.PinnedSectionListAdapter;
+import de.halfbit.pinnedsection.examples.pinnedsection.R;
 
 public class PinnedSectionListActivity extends ListActivity implements OnClickListener {
 
@@ -54,9 +54,9 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
         }
 
         public void generateDataset(char from, char to, boolean clear) {
-        	
+
         	if (clear) clear();
-        	
+
             final int sectionsNumber = to - from + 1;
             prepareSections(sectionsNumber);
 
@@ -79,7 +79,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
                 sectionPosition++;
             }
         }
-        
+
         protected void prepareSections(int sectionsNumber) { }
         protected void onSectionAdded(Item section, int sectionPosition) { }
 
@@ -258,7 +258,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 		}
 		adapter.notifyDataSetChanged();
 	}
-	
+
 	private void initializePadding() {
 	    float density = getResources().getDisplayMetrics().density;
 	    int padding = addPadding ? (int) (16 * density) : 0;

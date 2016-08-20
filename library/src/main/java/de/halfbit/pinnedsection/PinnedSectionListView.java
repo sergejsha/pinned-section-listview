@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Sergej Shafarenka, halfbit.de
+ * Copyright (C) 2013-2016 Sergej Shafarenka, halfbit.de
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file kt in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.hb.views;
+package de.halfbit.pinnedsection;
 
 import android.content.Context;
 import android.database.DataSetObserver;
@@ -30,14 +30,13 @@ import android.view.MotionEvent;
 import android.view.SoundEffectConstants;
 import android.view.View;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.AbsListView;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SectionIndexer;
-
-import com.hb.views.pinnedsection.BuildConfig;
 
 /**
  * ListView, which is capable to pin section views at its top while the rest is still scrolled.
@@ -47,7 +46,7 @@ public class PinnedSectionListView extends ListView {
     //-- inner classes
 
 	/** List adapter to be implemented for being used with PinnedSectionListView adapter. */
-	public static interface PinnedSectionListAdapter extends ListAdapter {
+	public interface PinnedSectionListAdapter extends ListAdapter {
 		/** This method shall return 'true' if views of given type has to be pinned. */
 		boolean isItemViewTypePinned(int viewType);
 	}
@@ -196,10 +195,10 @@ public class PinnedSectionListView extends ListView {
 		View pinnedView = getAdapter().getView(position, pinnedShadow.view, PinnedSectionListView.this);
 
 		// read layout parameters
-		LayoutParams layoutParams = (LayoutParams) pinnedView.getLayoutParams();
+		ViewGroup.LayoutParams layoutParams = pinnedView.getLayoutParams();
 		if (layoutParams == null) {
-		    layoutParams = (LayoutParams) generateDefaultLayoutParams();
-		    pinnedView.setLayoutParams(layoutParams);
+		        layoutParams = generateDefaultLayoutParams();
+		        pinnedView.setLayoutParams(layoutParams);
 		}
 
 		int heightMode = MeasureSpec.getMode(layoutParams.height);
@@ -278,9 +277,14 @@ public class PinnedSectionListView extends ListView {
 
 	int findFirstVisibleSectionPosition(int firstVisibleItem, int visibleItemCount) {
 		ListAdapter adapter = getAdapter();
-		
-		if (firstVisibleItem + visibleItemCount >= adapter.getCount()) return -1; // dataset has changed, no candidate
-		
+
+        int adapterDataCount = adapter.getCount();
+        if (getLastVisiblePosition() >= adapterDataCount) return -1; // dataset has changed, no candidate
+
+        if (firstVisibleItem+visibleItemCount >= adapterDataCount){//added to prevent index Outofbound (in case)
+            visibleItemCount = adapterDataCount-firstVisibleItem;
+        }
+
 		for (int childIndex = 0; childIndex < visibleItemCount; childIndex++) {
 			int position = firstVisibleItem + childIndex;
 			int viewType = adapter.getItemViewType(position);
@@ -293,7 +297,7 @@ public class PinnedSectionListView extends ListView {
 		ListAdapter adapter = getAdapter();
 
 		if (fromPosition >= adapter.getCount()) return -1; // dataset has changed, no candidate
-		
+
 		if (adapter instanceof SectionIndexer) {
 			// try fast way by asking section indexer
 			SectionIndexer indexer = (SectionIndexer) adapter;
@@ -348,7 +352,7 @@ public class PinnedSectionListView extends ListView {
 	public void setAdapter(ListAdapter adapter) {
 
 	    // assert adapter in debug mode
-		if (BuildConfig.DEBUG && adapter != null) {
+		if (adapter != null) {
 			if (!(adapter instanceof PinnedSectionListAdapter))
 				throw new IllegalArgumentException("Does your adapter implement PinnedSectionListAdapter?");
 			if (adapter.getViewTypeCount() < 2)
