@@ -1,14 +1,13 @@
-# files
 .project
 .classpath
 .settings
-**/.DS_Store
-*.iml
-local.properties
-
-# folders
-**/build/
 .idea/
 .gradle/
-gen/
-bin/
+
+local.properties
+*.iml
+
+**/.DS_Store
+**/build/
+**/gen/
+**/bin/
