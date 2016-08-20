@@ -5,8 +5,8 @@ of the list until at least one item of that section is visible.
 ![Screenshot 2](web/screen2.png)&nbsp;
 ![Screenshot 3](web/screen3.png)
 
-Features
-========
+# Features
+
 This list properly implements many features which are missing from other implementations. These are
  * Fast scroll
  * Headers and footers
@@ -16,8 +16,8 @@ Besides this it doesn't create any unnecessary views, layouts etc. It's really l
 
 Watch [this video][1] to see `PinnedSectionListView` in action.
 
-Usage
-=====
+# Usage example
+
  1. Replace standard `ListView` with `de.halfbit.pinnedsection.PinnedSectionListView` in your `layout.xml` file.
 
 ```xml
@@ -48,6 +48,16 @@ Usage
 ```
 
 That's all. You are done! A working example can also be found in `example` folder. 
+
+# Use with Gradle
+
+Add this to your module-level `build.gradle`:
+
+```groovy
+dependencies {
+    compile "de.halfbit:pinned-section-listview:1.0.0"
+}
+```
 
 Used by
 =======
