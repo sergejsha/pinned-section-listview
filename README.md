@@ -64,6 +64,7 @@ Used by
 Let us know if you use this library in your application and we will mention it here.
 
 [Grocery Sum][2]
+[Slack][3]
 
 [Slack][3]
 
