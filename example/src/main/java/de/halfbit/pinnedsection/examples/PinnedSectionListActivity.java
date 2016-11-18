@@ -108,6 +108,11 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
             return viewType == Item.SECTION;
         }
 
+        @Override
+        public void pinnedItemChanged(int position) {
+
+        }
+
     }
 
     static class FastScrollAdapter extends SimpleAdapter implements SectionIndexer {
