@@ -7,5 +7,6 @@
     <string name="action_showShadow">Show shadow</string>
     <string name="action_showHeaderAndFooter">Show Header &amp; Footer</string>
     <string name="action_updateDataset">Update dataset</string>
+    <string name="action_highlight_active">Highlight active item</string>
 
 </resources>

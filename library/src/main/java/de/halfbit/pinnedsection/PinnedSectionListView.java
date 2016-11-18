@@ -86,6 +86,9 @@ public class PinnedSectionListView extends ListView {
     /** Pinned view Y-translation. We use it to stick pinned view to the next section. */
     int mTranslateY;
 
+    /** Position of the current pinned item, so we can tell when it changes. */
+    int currentPinned;
+
 	/** Scroll listener which does the magic */
 	private final OnScrollListener mOnScrollListener = new OnScrollListener() {
 
@@ -106,6 +109,8 @@ public class PinnedSectionListView extends ListView {
             ListAdapter adapter = getAdapter();
             if (adapter == null || visibleItemCount == 0) return; // nothing to do
 
+            int sectionPosition = findCurrentSectionPosition(firstVisibleItem);
+
             final boolean isFirstVisibleItemSection =
                     isItemViewTypePinned(adapter, adapter.getItemViewType(firstVisibleItem));
 
@@ -118,7 +123,6 @@ public class PinnedSectionListView extends ListView {
                 }
 
             } else { // section is not at the first visible position
-                int sectionPosition = findCurrentSectionPosition(firstVisibleItem);
                 if (sectionPosition > -1) { // we have section position
                     ensureShadowForPosition(sectionPosition, firstVisibleItem, visibleItemCount);
                 } else { // there is no section for the first visible item, destroy shadow
@@ -307,7 +311,7 @@ public class PinnedSectionListView extends ListView {
 			int itemPosition = indexer.getPositionForSection(sectionPosition);
 			int typeView = adapter.getItemViewType(itemPosition);
 			if (isItemViewTypePinned(adapter, typeView)) {
-                pinnedItemChanged(adapter, itemPosition);
+                checkPinnedItemChange(adapter, itemPosition);
 				return itemPosition;
 			} // else, no luck
 		}
@@ -316,12 +320,20 @@ public class PinnedSectionListView extends ListView {
 		for (int position=fromPosition; position>=0; position--) {
 			int viewType = adapter.getItemViewType(position);
 			if (isItemViewTypePinned(adapter, viewType)) {
-                pinnedItemChanged(adapter, position);
+                checkPinnedItemChange(adapter, position);
                 return position;
             }
 		}
 		return -1; // no candidate found
 	}
+
+    /* If the current item has changed, notify the adapter by calling its interface method. */
+    void checkPinnedItemChange(ListAdapter adapter, int position) {
+        if(currentPinned != position) {
+            currentPinned = position;
+            pinnedItemChanged(adapter, position);
+        }
+    }
 
 	void recreatePinnedShadow() {
 	    destroyPinnedShadow();

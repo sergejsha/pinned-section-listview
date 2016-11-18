@@ -44,13 +44,17 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 
     static class SimpleAdapter extends ArrayAdapter<Item> implements PinnedSectionListAdapter {
 
+        int currentPinned;
+        int headerItems;
+
         private static final int[] COLORS = new int[] {
             R.color.green_light, R.color.orange_light,
             R.color.blue_light, R.color.red_light };
 
-        public SimpleAdapter(Context context, int resource, int textViewResourceId) {
+        public SimpleAdapter(Context context, int resource, int textViewResourceId, int headerItems) {
             super(context, resource, textViewResourceId);
             generateDataset('A', 'Z', false);
+            this.headerItems = headerItems;
         }
 
         public void generateDataset(char from, char to, boolean clear) {
@@ -90,7 +94,12 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
             Item item = getItem(position);
             if (item.type == Item.SECTION) {
                 //view.setOnClickListener(PinnedSectionListActivity.this);
-                view.setBackgroundColor(parent.getResources().getColor(COLORS[item.sectionPosition % COLORS.length]));
+                // If there are header Views, the position received does not include these
+                if(highlightActive && (position + headerItems) == currentPinned) {
+                    view.setBackgroundColor(parent.getResources().getColor(R.color.pink_light));
+                } else {
+                    view.setBackgroundColor(parent.getResources().getColor(COLORS[item.sectionPosition % COLORS.length]));
+                }
             }
             return view;
         }
@@ -110,7 +119,11 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 
         @Override
         public void pinnedItemChanged(int position) {
-
+            // Record the current pinned item and redraw
+            if(highlightActive) {
+                currentPinned = position;
+                notifyDataSetChanged();
+            }
         }
 
     }
@@ -119,8 +132,8 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 
         private Item[] sections;
 
-        public FastScrollAdapter(Context context, int resource, int textViewResourceId) {
-            super(context, resource, textViewResourceId);
+        public FastScrollAdapter(Context context, int resource, int textViewResourceId, int headerItems) {
+            super(context, resource, textViewResourceId, headerItems);
         }
 
         @Override protected void prepareSections(int sectionsNumber) {
@@ -177,6 +190,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 	private boolean isFastScroll;
 	private boolean addPadding;
 	private boolean isShadowVisible = true;
+    private static boolean highlightActive = false;
 	private int mDatasetUpdateCount;
 
 	@Override
@@ -188,6 +202,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 		    addPadding = savedInstanceState.getBoolean("addPadding");
 		    isShadowVisible = savedInstanceState.getBoolean("isShadowVisible");
 		    hasHeaderAndFooter = savedInstanceState.getBoolean("hasHeaderAndFooter");
+		    highlightActive = savedInstanceState.getBoolean("highlightActive");
 		}
 		initializeHeaderAndFooter();
 		initializeAdapter();
@@ -201,6 +216,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 	    outState.putBoolean("addPadding", addPadding);
 	    outState.putBoolean("isShadowVisible", isShadowVisible);
 	    outState.putBoolean("hasHeaderAndFooter", hasHeaderAndFooter);
+	    outState.putBoolean("highlightActive", highlightActive);
 	}
 
 	@Override
@@ -219,6 +235,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 		menu.getItem(0).setChecked(isFastScroll);
 		menu.getItem(1).setChecked(addPadding);
 		menu.getItem(2).setChecked(isShadowVisible);
+		menu.getItem(3).setChecked(highlightActive);
 		return true;
 	}
 
@@ -245,6 +262,10 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
     	        item.setChecked(hasHeaderAndFooter);
     	        initializeHeaderAndFooter();
     	        break;
+            case R.id.action_highlight_active:
+                highlightActive = !highlightActive;
+                item.setChecked(highlightActive);
+                break;
     	    case R.id.action_updateDataset:
     	    	updateDataset();
     	    	break;
@@ -298,9 +319,9 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
                 getListView().setFastScrollAlwaysVisible(true);
             }
-            setListAdapter(new FastScrollAdapter(this, android.R.layout.simple_list_item_1, android.R.id.text1));
+            setListAdapter(new FastScrollAdapter(this, android.R.layout.simple_list_item_1, android.R.id.text1, getListView().getHeaderViewsCount()));
         } else {
-            setListAdapter(new SimpleAdapter(this, android.R.layout.simple_list_item_1, android.R.id.text1));
+            setListAdapter(new SimpleAdapter(this, android.R.layout.simple_list_item_1, android.R.id.text1, getListView().getHeaderViewsCount()));
         }
     }
 
