@@ -49,8 +49,8 @@ public class PinnedSectionListView extends ListView {
 	public interface PinnedSectionListAdapter extends ListAdapter {
 		/** This method shall return 'true' if views of given type has to be pinned. */
 		boolean isItemViewTypePinned(int viewType);
-        /** This method notifies the adapter that the pinned item has changed. */
-        void pinnedItemChanged(int position);
+		/** This method notifies the adapter that the pinned item has changed. */
+		void pinnedItemChanged(int position);
 	}
 
 	/** Wrapper class for pinned section view and its position in the list. */
@@ -311,7 +311,7 @@ public class PinnedSectionListView extends ListView {
 			int itemPosition = indexer.getPositionForSection(sectionPosition);
 			int typeView = adapter.getItemViewType(itemPosition);
 			if (isItemViewTypePinned(adapter, typeView)) {
-                checkPinnedItemChange(adapter, itemPosition);
+				checkPinnedItemChange(adapter, itemPosition);
 				return itemPosition;
 			} // else, no luck
 		}
@@ -320,20 +320,20 @@ public class PinnedSectionListView extends ListView {
 		for (int position=fromPosition; position>=0; position--) {
 			int viewType = adapter.getItemViewType(position);
 			if (isItemViewTypePinned(adapter, viewType)) {
-                checkPinnedItemChange(adapter, position);
-                return position;
-            }
+				checkPinnedItemChange(adapter, position);
+				return position;
+			}
 		}
 		return -1; // no candidate found
 	}
 
-    /* If the current item has changed, notify the adapter by calling its interface method. */
-    void checkPinnedItemChange(ListAdapter adapter, int position) {
-        if(currentPinned != position) {
-            currentPinned = position;
-            pinnedItemChanged(adapter, position);
-        }
-    }
+	/* If the current item has changed, notify the adapter by calling its interface method. */
+	void checkPinnedItemChange(ListAdapter adapter, int position) {
+		if(currentPinned != position) {
+			currentPinned = position;
+			pinnedItemChanged(adapter, position);
+		}
+	}
 
 	void recreatePinnedShadow() {
 	    destroyPinnedShadow();
@@ -539,10 +539,10 @@ public class PinnedSectionListView extends ListView {
     }
 
     public static void pinnedItemChanged(ListAdapter adapter, int position) {
-      if (adapter instanceof HeaderViewListAdapter) {
-        adapter = ((HeaderViewListAdapter)adapter).getWrappedAdapter();
-      }
-      ((PinnedSectionListAdapter) adapter).pinnedItemChanged(position);
+		if (adapter instanceof HeaderViewListAdapter) {
+			adapter = ((HeaderViewListAdapter)adapter).getWrappedAdapter();
+		}
+		((PinnedSectionListAdapter) adapter).pinnedItemChanged(position);
     }
 
 }

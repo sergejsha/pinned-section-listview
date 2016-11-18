@@ -190,7 +190,7 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
 	private boolean isFastScroll;
 	private boolean addPadding;
 	private boolean isShadowVisible = true;
-    private static boolean highlightActive = false;
+	private static boolean highlightActive = false;
 	private int mDatasetUpdateCount;
 
 	@Override
@@ -262,10 +262,10 @@ public class PinnedSectionListActivity extends ListActivity implements OnClickLi
     	        item.setChecked(hasHeaderAndFooter);
     	        initializeHeaderAndFooter();
     	        break;
-            case R.id.action_highlight_active:
-                highlightActive = !highlightActive;
-                item.setChecked(highlightActive);
-                break;
+			case R.id.action_highlight_active:
+				highlightActive = !highlightActive;
+				item.setChecked(highlightActive);
+				break;
     	    case R.id.action_updateDataset:
     	    	updateDataset();
     	    	break;
