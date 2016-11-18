@@ -49,6 +49,8 @@ public class PinnedSectionListView extends ListView {
 	public interface PinnedSectionListAdapter extends ListAdapter {
 		/** This method shall return 'true' if views of given type has to be pinned. */
 		boolean isItemViewTypePinned(int viewType);
+        /** This method notifies the adapter that the pinned item has changed. */
+        void pinnedItemChanged(int position);
 	}
 
 	/** Wrapper class for pinned section view and its position in the list. */
@@ -305,6 +307,7 @@ public class PinnedSectionListView extends ListView {
 			int itemPosition = indexer.getPositionForSection(sectionPosition);
 			int typeView = adapter.getItemViewType(itemPosition);
 			if (isItemViewTypePinned(adapter, typeView)) {
+                pinnedItemChanged(adapter, itemPosition);
 				return itemPosition;
 			} // else, no luck
 		}
@@ -312,7 +315,10 @@ public class PinnedSectionListView extends ListView {
 		// try slow way by looking through to the next section item above
 		for (int position=fromPosition; position>=0; position--) {
 			int viewType = adapter.getItemViewType(position);
-			if (isItemViewTypePinned(adapter, viewType)) return position;
+			if (isItemViewTypePinned(adapter, viewType)) {
+                pinnedItemChanged(adapter, position);
+                return position;
+            }
 		}
 		return -1; // no candidate found
 	}
@@ -518,6 +524,13 @@ public class PinnedSectionListView extends ListView {
             adapter = ((HeaderViewListAdapter)adapter).getWrappedAdapter();
         }
         return ((PinnedSectionListAdapter) adapter).isItemViewTypePinned(viewType);
+    }
+
+    public static void pinnedItemChanged(ListAdapter adapter, int position) {
+      if (adapter instanceof HeaderViewListAdapter) {
+        adapter = ((HeaderViewListAdapter)adapter).getWrappedAdapter();
+      }
+      ((PinnedSectionListAdapter) adapter).pinnedItemChanged(position);
     }
 
 }
