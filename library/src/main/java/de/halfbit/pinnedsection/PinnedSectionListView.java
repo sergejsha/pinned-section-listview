@@ -49,6 +49,8 @@ public class PinnedSectionListView extends ListView {
 	public interface PinnedSectionListAdapter extends ListAdapter {
 		/** This method shall return 'true' if views of given type has to be pinned. */
 		boolean isItemViewTypePinned(int viewType);
+		/** This method notifies the adapter that the pinned item has changed. */
+		void pinnedItemChanged(int position);
 	}
 
 	/** Wrapper class for pinned section view and its position in the list. */
@@ -84,6 +86,9 @@ public class PinnedSectionListView extends ListView {
     /** Pinned view Y-translation. We use it to stick pinned view to the next section. */
     int mTranslateY;
 
+    /** Position of the current pinned item, so we can tell when it changes. */
+    int currentPinned;
+
 	/** Scroll listener which does the magic */
 	private final OnScrollListener mOnScrollListener = new OnScrollListener() {
 
@@ -104,6 +109,8 @@ public class PinnedSectionListView extends ListView {
             ListAdapter adapter = getAdapter();
             if (adapter == null || visibleItemCount == 0) return; // nothing to do
 
+            int sectionPosition = findCurrentSectionPosition(firstVisibleItem);
+
             final boolean isFirstVisibleItemSection =
                     isItemViewTypePinned(adapter, adapter.getItemViewType(firstVisibleItem));
 
@@ -116,7 +123,6 @@ public class PinnedSectionListView extends ListView {
                 }
 
             } else { // section is not at the first visible position
-                int sectionPosition = findCurrentSectionPosition(firstVisibleItem);
                 if (sectionPosition > -1) { // we have section position
                     ensureShadowForPosition(sectionPosition, firstVisibleItem, visibleItemCount);
                 } else { // there is no section for the first visible item, destroy shadow
@@ -236,10 +242,6 @@ public class PinnedSectionListView extends ListView {
 
 	/** Makes sure we have an actual pinned shadow for given position. */
     void ensureShadowForPosition(int sectionPosition, int firstVisibleItem, int visibleItemCount) {
-        if (visibleItemCount < 2) { // no need for creating shadow at all, we have a single visible item
-            destroyPinnedShadow();
-            return;
-        }
 
         if (mPinnedSection != null
                 && mPinnedSection.position != sectionPosition) { // invalidate shadow, if required
@@ -305,6 +307,7 @@ public class PinnedSectionListView extends ListView {
 			int itemPosition = indexer.getPositionForSection(sectionPosition);
 			int typeView = adapter.getItemViewType(itemPosition);
 			if (isItemViewTypePinned(adapter, typeView)) {
+				checkPinnedItemChange(adapter, itemPosition);
 				return itemPosition;
 			} // else, no luck
 		}
@@ -312,9 +315,20 @@ public class PinnedSectionListView extends ListView {
 		// try slow way by looking through to the next section item above
 		for (int position=fromPosition; position>=0; position--) {
 			int viewType = adapter.getItemViewType(position);
-			if (isItemViewTypePinned(adapter, viewType)) return position;
+			if (isItemViewTypePinned(adapter, viewType)) {
+				checkPinnedItemChange(adapter, position);
+				return position;
+			}
 		}
 		return -1; // no candidate found
+	}
+
+	/* If the current item has changed, notify the adapter by calling its interface method. */
+	void checkPinnedItemChange(ListAdapter adapter, int position) {
+		if(currentPinned != position) {
+			currentPinned = position;
+			pinnedItemChanged(adapter, position);
+		}
 	}
 
 	void recreatePinnedShadow() {
@@ -518,6 +532,13 @@ public class PinnedSectionListView extends ListView {
             adapter = ((HeaderViewListAdapter)adapter).getWrappedAdapter();
         }
         return ((PinnedSectionListAdapter) adapter).isItemViewTypePinned(viewType);
+    }
+
+    public static void pinnedItemChanged(ListAdapter adapter, int position) {
+		if (adapter instanceof HeaderViewListAdapter) {
+			adapter = ((HeaderViewListAdapter)adapter).getWrappedAdapter();
+		}
+		((PinnedSectionListAdapter) adapter).pinnedItemChanged(position);
     }
 
 }
